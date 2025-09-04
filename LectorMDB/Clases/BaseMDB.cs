@@ -17,13 +17,11 @@ namespace LectorMDB.Clases
         public int fontSize { get; set; }
         public int largoHojaActual { get; set; }
 
-        public BaseMDB(int fs)
-        /*
-         * Constructor, set fontsize and numeroHojaMaxima.
-         */
+        
+        public void getDefaultsInts(List<int> values)
         {
-            fontSize = fs;
-            numeroHojaMaxima = -1;
+            fontSize = values[0];
+            numeroHojaMaxima = values[1];
         }
 
         public void darHoja(int numeroDeHoja)
@@ -93,21 +91,6 @@ namespace LectorMDB.Clases
                 Console.WriteLine("OLEDB Connection FAILED: " + ex.Message);
             }
             return myDataTable;
-        }
-        public bool isMastracho(string fileName)
-        /*
-         * Test if fileName have a table called Libro with a field HojaNro.
-         */
-        {
-            DataTable testHoja = readMDB("SELECT * FROM Libro WHERE HojaNro = 1", fileName);
-            if (testHoja.Rows.Count == 0)
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
         }
         public List<string> searchLines(string clave, string regexString = "")
         /*
