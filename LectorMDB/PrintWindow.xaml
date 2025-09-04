@@ -1,0 +1,66 @@
+﻿<Window x:Class="LectorMDB.PrintWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LectorMDB"
+        mc:Ignorable="d"
+        Title="PrintWindow" SizeToContent="WidthAndHeight" Background="Gray" FontSize="18"
+        HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20"/>
+            <!-- 0 -->
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <!-- 12 -->
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <!-- 0 -->
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <!-- 4 -->
+            <RowDefinition Height="*" />
+            <RowDefinition Height="10" />
+        </Grid.RowDefinitions>
+
+        <ComboBox x:Name="printConfig" Grid.Column="1" Grid.Row="1" DropDownClosed="printConfig_DropDownClosed"></ComboBox>
+        <ComboBox x:Name="tipoHoja" Grid.Column="2" Grid.Row="1" Margin="20, 0, 0, 0"></ComboBox>
+        <ComboBox x:Name="orientacionHoja" Grid.Column="3" Grid.Row="1" Margin="20, 0, 0, 0"></ComboBox>
+        <ComboBox x:Name="fontPrint" Grid.Column="4" Grid.Row="1" Margin="20, 0, 0, 0"></ComboBox>
+
+        <CheckBox x:Name="verificarHojas" Grid.Column="1" Grid.Row="2" Margin="0, 10, 0, 0" IsChecked="True" ></CheckBox>
+        <TextBlock Grid.Column="1" Grid.Row="2" Text="Verificar Hoja" Margin="20, 5, 0, 0" ></TextBlock>
+
+        <CheckBox x:Name="verificarPDF" Grid.Column="1" Grid.Row="3" Margin="0, 10, 0, 0" IsChecked="False" ></CheckBox>
+        <TextBlock Grid.Column="1" Grid.Row="3" Text="Crear PDF" Margin="20, 5, 0, 0" ></TextBlock>
+
+        <TextBox x:Name="printNumeroHoja" Grid.Column="1" Grid.Row="4" Width="100" Margin="0, 10, 0, 0" TextAlignment="Center"  TextWrapping="Wrap" PreviewTextInput="printNumeroHoja_PreviewTextInput" ></TextBox>
+
+        <TextBox x:Name="printNumeroHojaUno" Grid.Column="1" Grid.Row="5" Width="100" Margin="0, 20, 0, 0" IsReadOnly="True"  TextWrapping="Wrap"  TextAlignment="Center" PreviewTextInput="printNumeroHojaUno_PreviewTextInput" ></TextBox>
+        <TextBlock Text="-" Grid.Column="2" Grid.Row="5" Margin="10, 20, 10, 0"></TextBlock>
+        <TextBox x:Name="printNumeroHojaDos" Grid.Column="3" Grid.Row="5" Width="100" Margin="0, 20, 0, 0"  IsReadOnly="True"  TextWrapping="Wrap"  TextAlignment="Center" PreviewTextInput="printNumeroHojaDos_PreviewTextInput" ></TextBox>
+        <Button x:Name="getMaxHoja" Grid.Column="4" Grid.Row="5" Content="Max"  Margin="0, 20, 0, 0" IsEnabled="False" Click="getMaxHoja_Click"></Button>
+
+        <Button x:Name="printEverything" Content="Imprimir" Grid.Column="3" Grid.Row="6" Click="printEverything_Click"></Button>
+
+
+    </Grid>
+</Window>
