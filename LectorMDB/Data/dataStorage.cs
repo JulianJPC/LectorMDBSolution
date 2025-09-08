@@ -21,6 +21,10 @@ namespace LectorMDB.Data
         private string queryGetOneHoja;
         private string queryCampoHoja;
         private string readerMDBString;
+        private List<string> tiposHojas;
+        private List<string> orientaciones;
+        private List<string> printConfig;
+        private List<string> fontPrintSizes;
         public dataStorage()
         {
             defaultFont = 12;
@@ -38,6 +42,26 @@ namespace LectorMDB.Data
             queryGetOneHoja = "SELECT Hoja FROM Libro WHERE HojaNro = ";
             queryCampoHoja = "Hoja";
             readerMDBString = @"Provider = Microsoft.Jet.OLEDB.4.0;Data Source=";
+            tiposHojas = new List<string> { "Carta", "A4", "A5", "Ejecutivo", "Legal" };
+            orientaciones = new List<string> { "Horizontal", "Vertical" };
+            printConfig = new List<string> { "        Una Hoja         ", "Varias Hojas Consecutivas" };
+            fontPrintSizes = new List<string> { "6", "7", "8", "9", "10", "11", "12" };
+        }
+        public List<string> getFPS()
+        {
+            return fontPrintSizes;
+        }
+        public List<string> getPC()
+        {
+            return printConfig;
+        }
+        public List<string> getO()
+        {
+            return orientaciones;
+        }
+        public List<string> getTH()
+        {
+            return tiposHojas;
         }
         public string getErrorOpening()
         {

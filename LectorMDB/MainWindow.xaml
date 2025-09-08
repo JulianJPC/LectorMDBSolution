@@ -79,7 +79,7 @@
         <Button x:Name="fontLessBoton" Content="L &#x25BC;"  Grid.Row="1" Grid.Column="10" HorizontalAlignment="Left" Margin="20,0,0,0" Click="fontLessBoton_Click" />
         <TextBlock x:Name="fontTamaño" Grid.Column="11" Grid.Row="1" Text="12" Margin="10,0,10,0"/>
         <ComboBox x:Name="fontCombo" Grid.Column="12" Grid.Row="1" Text="12" Margin="10,0,0,0" DropDownClosed="fontCombo_DropDownClosed" KeyDown="fontCombo_KeyDown" KeyUp="fontCombo_KeyUp"/>
-        <Button x:Name="printOpen" Content="Imprimir"  Grid.Row="1" Grid.Column="13" HorizontalAlignment="Left" Margin="20,0,0,0" Click="printOpen_Click" IsEnabled="False" Visibility="Hidden" />
+        <Button x:Name="printOpen" Content="Imprimir"  Grid.Row="1" Grid.Column="13" HorizontalAlignment="Left" Margin="20,0,0,0" Click="printOpen_Click" />
         <!-- 2 -->
         <TextBlock x:Name="nombreMDB" Grid.Column="1" Grid.Row="2" Text="Archivo..." Margin="20,0,0,0" Grid.ColumnSpan="10"/>
         <!-- 3 -->

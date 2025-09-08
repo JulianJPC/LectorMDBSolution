@@ -226,8 +226,16 @@ namespace LectorMDB
 
         private void printOpen_Click(object sender, RoutedEventArgs e)
         {
-            PrintWindow pw = new PrintWindow(newMDB);
-            pw.Show();
+            if(newMDB.path != null)
+            {
+                PrintWindow pw = new PrintWindow(newMDB, theData.getTH(), theData.getO(), theData.getPC(), theData.getFPS()) ;
+                pw.Show();
+            }
+            else
+            {
+                MessageBox.Show("No hay libro cargado.", titleError);
+            }
+            
         }
 
         /// <summary>
@@ -276,33 +284,15 @@ namespace LectorMDB
             inputWin.Owner = this; // So it centers on the main window
             if (inputWin.ShowDialog() == true)
             {
-                var foundText = false;
-                var counter = newMDB.numeroHojaActual;
-                while(counter <= newMDB.numeroHojaMaxima)
+                var numberPage = newMDB.searchHojaText(inputWin.InputText);
+                if(numberPage != 0)
                 {
-                    if (newMDB.BuscarHojaRaw(counter).Contains(inputWin.InputText))
-                    {
-                        CambiarHoja(counter);
-                        HighlightText(ContenidoMDB, inputWin.InputText, Brushes.Red);
-                        foundText = true;
-                        break;
-                    }
-                    counter++;
+                    CambiarHoja(numberPage);
+                    HighlightText(ContenidoMDB, inputWin.InputText, Brushes.Red);
                 }
-                counter = 1;
-                if (!foundText)
+                else
                 {
-                    
-                    while(counter <= newMDB.numeroHojaActual)
-                    {
-                        if (newMDB.BuscarHojaRaw(counter).Contains(inputWin.InputText))
-                        {
-                            CambiarHoja(counter);
-                            HighlightText(ContenidoMDB, inputWin.InputText, Brushes.Red);
-                            break;
-                        }
-                        counter++;
-                    }
+                    MessageBox.Show("No se encontro texto.", titleError);
                 }
             }
         }

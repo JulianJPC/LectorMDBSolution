@@ -39,31 +39,21 @@ namespace LectorMDB.Clases
             readerMDBString = values[3];
         }
 
+        /// <summary>
+        ///  Given a number of sheet changes hojaActual, numeroHojaActual and largoHojaActual.
+        /// </summary>
         public bool BuscarHoja(int numeroDeHoja)
-        /*
-         * Given a number of sheet changes hojaActual, numeroHojaActual and largoHojaActual.
-         */
         {
             var hasChange = false;
             if(numeroDeHoja >= 1 & numeroDeHoja <= numeroHojaMaxima & path != null)
             {
                 numeroHojaActual = numeroDeHoja;
-                DataTable infoHoja = readMDB(queryGetOneHoja + numeroDeHoja.ToString());
+                DataTable infoHoja = readMDB(queryGetOneHoja + numeroHojaActual.ToString());
                 hojaActual = getInfoDataTable(infoHoja, queryCampoHoja)[0];
                 getLargoActual();
                 hasChange = true;
             }
             return hasChange;
-        }
-        public string BuscarHojaRaw(int numeroDeHoja)
-        {
-            var response = "";
-            if (numeroDeHoja >= 1 & numeroDeHoja <= numeroHojaMaxima & path != null)
-            {
-                DataTable infoHoja = readMDB(queryGetOneHoja + numeroDeHoja.ToString());
-                response = getInfoDataTable(infoHoja, queryCampoHoja)[0];
-            }
-            return response;
         }
         private void getLargoActual()
         {
@@ -76,7 +66,6 @@ namespace LectorMDB.Clases
                 }
             }
         }
-
         /// <summary>
         /// Searches in the MDB the max number of page and gives its value to numeroHojaMaxima
         /// </summary>
@@ -85,24 +74,33 @@ namespace LectorMDB.Clases
             DataTable infoHoja = readMDB(queryMAXHoja);
             numeroHojaMaxima = Convert.ToInt32(getInfoDataTable(infoHoja, "Expr1000")[0]);
         }
+        /// <summary>
+        ///  Return large of richBox, taking into account fontsize and largoHojaActual.
+        /// </summary>
         public int newSizeRichBox()
-        /*
-         *  Return large of richBox, taking into account fontsize and largoHojaActual.
-         */
         {
             float cantidad = Convert.ToSingle(4.9) + (Convert.ToSingle(0.6) * (Convert.ToSingle(fontSize) - 8));
             return Convert.ToInt32(largoHojaActual * cantidad);
-        }      
-        public DataTable readMDB(string query, string pathQuery = "")
+        }
+
+        public int searchHojaText(string textToSearch)
+        {
+            var response = 0;            
+            //var query = queryGetOneHoja + counter.ToString();
+            var query = $"SELECT HojaNro FROM Libro WHERE Hoja LIKE '%{textToSearch}%';";
+            var result = readMDB(query);
+            if(result.Rows.Count > 0)
+            {
+                response = Int32.Parse(getInfoDataTable(result, "HojaNro")[0]);
+            }
+            return response;
+        }
+        public DataTable readMDB(string query)
         /*
          * Given a query, execute it in the MDB file. If a pathQuery is given changes the location of MDB file.
          */
         {
-            if (pathQuery == "")
-            {
-                pathQuery = path;
-            }
-            string myConnectionString = readerMDBString + pathQuery + ";";
+            string myConnectionString = readerMDBString + path + ";";
             DataTable myDataTable = new DataTable();
             try
             {
@@ -126,44 +124,6 @@ namespace LectorMDB.Clases
                 Console.WriteLine("OLEDB Connection FAILED: " + ex.Message);
             }
             return myDataTable;
-        }
-        public List<string> searchLines(string clave, string regexString = "")
-        /*
-         *  Given a clave searches sheet by sheet and line by line if it contains that clave. If regex
-         *  is given searches regex.
-         */
-        {
-            string pattern = "";
-            Regex rgx = new Regex("");
-            List<string> laInfo = new List<string>();
-            if (regexString != "")
-            {
-                pattern = regexString ;
-                rgx = new Regex(pattern);
-            }
-
-
-            for (int i = 1; i <= numeroHojaMaxima; i++)
-            {
-                DataTable hojaTabla = readMDB("SELECT Hoja FROM Libro WHERE HojaNro = " + i.ToString());
-                string hoja = getInfoDataTable(hojaTabla, "Hoja")[0];
-                
-                foreach (string linea in hoja.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
-                {
-                    if (linea.Contains(clave) & regexString == "")
-                    {
-                        laInfo.Add("Número de Hoja: " + i.ToString() + "|-=-|" +linea);
-                    }
-                    else if (regexString != "")
-                    {
-                        if (rgx.IsMatch(linea))
-                        {
-                            laInfo.Add("Número de Hoja: " + i.ToString() + "|-=-|" + linea);
-                        }
-                    }
-                }
-            }
-            return laInfo;
         }
         private List<string> getInfoDataTable(DataTable laTabla, string nombreCampo)
         /*

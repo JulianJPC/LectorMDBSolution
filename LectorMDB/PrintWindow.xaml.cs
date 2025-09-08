@@ -24,44 +24,37 @@ namespace LectorMDB
     public partial class PrintWindow : Window
     {
         public Clases.BaseMDB libroAImprimir { get; set; }
-        public PrintWindow(Clases.BaseMDB libroDado)
+        public PrintWindow(Clases.BaseMDB libroDado, List<string> tiposHojas, List<string> orientaciones, List<string> printConfigs, List<string> fontsSizes)
         {
             InitializeComponent();
-            libroAImprimir = new Clases.BaseMDB();
-            libroAImprimir.path = libroDado.path;
-            libroAImprimir.hojaActual = libroDado.hojaActual;
-            libroAImprimir.numeroHojaActual = libroDado.numeroHojaActual;
-            libroAImprimir.numeroHojaMaxima = libroDado.numeroHojaMaxima;
-            libroAImprimir.fontSize = libroDado.fontSize;
-            libroAImprimir.largoHojaActual = libroDado.largoHojaActual;
+            libroAImprimir = libroDado;
             printNumeroHoja.Text = libroAImprimir.numeroHojaActual.ToString();
-            printConfig.Items.Add("        Una Hoja         ");
-            printConfig.Items.Add("Varias Hojas Consecutivas");
-            printConfig.SelectedItem = "        Una Hoja         ";
-            tipoHoja.Items.Add("Carta");
-            tipoHoja.Items.Add("A4");
-            tipoHoja.Items.Add("A5");
-            tipoHoja.Items.Add("Legal");
-            tipoHoja.Items.Add("Ejecutivo");
-            tipoHoja.SelectedItem = "Legal";
-            orientacionHoja.Items.Add("Horizontal");
-            orientacionHoja.Items.Add("Vertical");
-            orientacionHoja.SelectedItem = "Horizontal";
-            fontPrint.Items.Add("6");
-            fontPrint.Items.Add("7");
-            fontPrint.Items.Add("8");
-            fontPrint.Items.Add("9");
-            fontPrint.Items.Add("10");
-            fontPrint.Items.Add("11");
-            fontPrint.Items.Add("12");
-            fontPrint.SelectedItem = "8";
+            foreach(string oneConfig in printConfigs)
+            {
+                printConfig.Items.Add(oneConfig);
+            }
+            printConfig.SelectedIndex = 0;
+            foreach(string oneTipo in tiposHojas)
+            {
+                tipoHoja.Items.Add(oneTipo);
+            }
+            tipoHoja.SelectedIndex = tipoHoja.Items.Count - 1;
+            foreach(string orients in orientaciones)
+            {
+                orientacionHoja.Items.Add(orients);
+            }
+            orientacionHoja.SelectedIndex = 0;
+            foreach (string oneSize in fontsSizes)
+            {
+                fontPrint.Items.Add(oneSize);
+            }
+            fontPrint.SelectedIndex = 2;
         }
         private void printEverything_Click(object sender, RoutedEventArgs e)
         {
             
-            if (printConfig.SelectedItem == "        Una Hoja         " & printNumeroHoja.Text.Length > 0)
+            if (printConfig.SelectedIndex == 0 & printNumeroHoja.Text.Length > 0)
             {
-                //GeneratePdf(newMDB.hojaActual, newMDB.path.Replace(".MDB", ".pdf").Replace(".mdb", ".pdf"));
                 var dlg = new PrintDialog();
                 //Prepara Configuracion Impresion
                 dlg.PageRangeSelection = PageRangeSelection.AllPages;
@@ -82,7 +75,7 @@ namespace LectorMDB
                 bool aceptaImprimir = false;
                 if (pagesNumber > 1)
                 {
-                    if (MessageBox.Show("Se va imprimir mas de una Hoja ¿Desea Continuar?", "Aviso", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                    if (MessageBox.Show("Desbordamiento. Se va imprimir mas de una Hoja ¿Desea Continuar?", "Aviso", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     {
                         aceptaImprimir = true;
                     }
@@ -97,11 +90,12 @@ namespace LectorMDB
                     {
 
                         dlg.PrintDocument(((IDocumentPaginatorSource)doc).DocumentPaginator, "Simple document");
+                        this.Close();
                     }
                 }
                 
             }
-            else if(printConfig.SelectedItem == "Varias Hojas Consecutivas" & printNumeroHojaUno.Text.Length > 0 & printNumeroHojaDos.Text.Length > 0)
+            else if(printConfig.SelectedIndex == 1 & printNumeroHojaUno.Text.Length > 0 & printNumeroHojaDos.Text.Length > 0)
             {
                 int hojaInicial = Int32.Parse(printNumeroHojaUno.Text);
                 int hojaFinal= Int32.Parse(printNumeroHojaDos.Text);
@@ -121,6 +115,7 @@ namespace LectorMDB
                     doc.PageWidth = dlg.PrintableAreaWidth;
                     doc.FontSize = Int32.Parse(fontPrint.SelectedItem.ToString());
                     doc.FontFamily = new FontFamily("Courier New");
+
                     for (int i = hojaInicial; i <= hojaFinal; i++)
                     {
                         libroAImprimir.BuscarHoja(i);
@@ -132,7 +127,7 @@ namespace LectorMDB
                     bool aceptaImprimir = false;
                     if(pagesNumber > hojaCantidad)
                     {
-                        if (MessageBox.Show("Se van imprimir " + pagesNumber.ToString() + " hojas. Deberian de ser " + hojaCantidad.ToString() + "¿Desea Continuar?", "Aviso", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                        if (MessageBox.Show("Desbordamiento. Se van imprimir " + pagesNumber.ToString() + " hojas. Deberian de ser " + hojaCantidad.ToString() + "¿Desea Continuar?", "Aviso", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                         {
                             aceptaImprimir = true;
                         }
@@ -147,6 +142,7 @@ namespace LectorMDB
                         {
 
                             dlg.PrintDocument(((IDocumentPaginatorSource)doc).DocumentPaginator, "Simple document");
+                            this.Close();
                         }
                     }
                 }

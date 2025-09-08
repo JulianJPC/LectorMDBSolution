@@ -49,8 +49,8 @@
         <CheckBox x:Name="verificarHojas" Grid.Column="1" Grid.Row="2" Margin="0, 10, 0, 0" IsChecked="True" ></CheckBox>
         <TextBlock Grid.Column="1" Grid.Row="2" Text="Verificar Hoja" Margin="20, 5, 0, 0" ></TextBlock>
 
-        <CheckBox x:Name="verificarPDF" Grid.Column="1" Grid.Row="3" Margin="0, 10, 0, 0" IsChecked="False" ></CheckBox>
-        <TextBlock Grid.Column="1" Grid.Row="3" Text="Crear PDF" Margin="20, 5, 0, 0" ></TextBlock>
+        <CheckBox x:Name="verificarPDF" Grid.Column="1" Grid.Row="3" Margin="0, 10, 0, 0" IsChecked="False" Visibility="Hidden" ></CheckBox>
+        <TextBlock Grid.Column="1" Grid.Row="3" Text="Crear PDF" Margin="20, 5, 0, 0" Visibility="Hidden" ></TextBlock>
 
         <TextBox x:Name="printNumeroHoja" Grid.Column="1" Grid.Row="4" Width="100" Margin="0, 10, 0, 0" TextAlignment="Center"  TextWrapping="Wrap" PreviewTextInput="printNumeroHoja_PreviewTextInput" ></TextBox>
 
