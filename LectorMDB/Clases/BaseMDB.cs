@@ -16,37 +16,73 @@ namespace LectorMDB.Clases
         public int numeroHojaMaxima { get; set; }
         public int fontSize { get; set; }
         public int largoHojaActual { get; set; }
+        private string queryMAXHoja { get; set; }
+        private string queryGetOneHoja { get; set; }
+        private string queryCampoHoja { get; set; }
+        private string readerMDBString { get; set; }
 
-        
+        public void setUpNewBook(string newPath)
+        {
+            path = newPath;
+            setHojaMaxima();
+        }
         public void getDefaultsInts(List<int> values)
         {
             fontSize = values[0];
             numeroHojaMaxima = values[1];
         }
+        public void getDefaultStrings(List<string> values)
+        {
+            queryMAXHoja = values[0];
+            queryGetOneHoja = values[1];
+            queryCampoHoja = values[2];
+            readerMDBString = values[3];
+        }
 
-        public void darHoja(int numeroDeHoja)
+        public bool BuscarHoja(int numeroDeHoja)
         /*
          * Given a number of sheet changes hojaActual, numeroHojaActual and largoHojaActual.
          */
         {
-            numeroHojaActual = numeroDeHoja;
-            DataTable infoHoja = readMDB("SELECT Hoja FROM Libro WHERE HojaNro = " + numeroDeHoja.ToString());
-            hojaActual = getInfoDataTable(infoHoja, "Hoja")[0];
+            var hasChange = false;
+            if(numeroDeHoja >= 1 & numeroDeHoja <= numeroHojaMaxima & path != null)
+            {
+                numeroHojaActual = numeroDeHoja;
+                DataTable infoHoja = readMDB(queryGetOneHoja + numeroDeHoja.ToString());
+                hojaActual = getInfoDataTable(infoHoja, queryCampoHoja)[0];
+                getLargoActual();
+                hasChange = true;
+            }
+            return hasChange;
+        }
+        public string BuscarHojaRaw(int numeroDeHoja)
+        {
+            var response = "";
+            if (numeroDeHoja >= 1 & numeroDeHoja <= numeroHojaMaxima & path != null)
+            {
+                DataTable infoHoja = readMDB(queryGetOneHoja + numeroDeHoja.ToString());
+                response = getInfoDataTable(infoHoja, queryCampoHoja)[0];
+            }
+            return response;
+        }
+        private void getLargoActual()
+        {
             largoHojaActual = 0;
-            foreach(string linea in hojaActual.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
+            foreach (string linea in hojaActual.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
             {
                 if (linea.Length > largoHojaActual)
-                {   
+                {
                     largoHojaActual = linea.Length;
                 }
             }
         }
+
+        /// <summary>
+        /// Searches in the MDB the max number of page and gives its value to numeroHojaMaxima
+        /// </summary>
         public void setHojaMaxima()
-        /*
-         *  Set numeroHojaMaxima from MDB.
-         */
         {
-            DataTable infoHoja = readMDB("SELECT MAX(HojaNro) FROM Libro");
+            DataTable infoHoja = readMDB(queryMAXHoja);
             numeroHojaMaxima = Convert.ToInt32(getInfoDataTable(infoHoja, "Expr1000")[0]);
         }
         public int newSizeRichBox()
@@ -66,25 +102,24 @@ namespace LectorMDB.Clases
             {
                 pathQuery = path;
             }
-            string myConnectionString = @"Provider=Microsoft.Jet.OLEDB.4.0;" +
-                        @"Data Source=" + pathQuery + ";";
+            string myConnectionString = readerMDBString + pathQuery + ";";
             DataTable myDataTable = new DataTable();
             try
             {
-            // Open OleDb Connection
-            OleDbConnection myConnection = new OleDbConnection();
-            myConnection.ConnectionString = myConnectionString;
-            myConnection.Open();
+                // Open OleDb Connection
+                OleDbConnection myConnection = new OleDbConnection();
+                myConnection.ConnectionString = myConnectionString;
+                myConnection.Open();
 
-            // Execute Queries
-            OleDbCommand cmd = myConnection.CreateCommand();
-            cmd.CommandText = query;
-            OleDbDataReader reader = cmd.ExecuteReader(CommandBehavior.CloseConnection); // close conn after complete
+                // Execute Queries
+                OleDbCommand cmd = myConnection.CreateCommand();
+                cmd.CommandText = query;
+                OleDbDataReader reader = cmd.ExecuteReader(CommandBehavior.CloseConnection); // close conn after complete
 
-            // Load the result into a DataTable
+                // Load the result into a DataTable
                     
-            myDataTable.Load(reader);
-            myConnection.Close();
+                myDataTable.Load(reader);
+                myConnection.Close();
             }
             catch (Exception ex)
             {

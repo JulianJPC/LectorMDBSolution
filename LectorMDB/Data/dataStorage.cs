@@ -17,7 +17,10 @@ namespace LectorMDB.Data
         private string titleError;
         private string errorFileFormat;
         private string errorOpening;
-
+        private string queryMAXHoja;
+        private string queryGetOneHoja;
+        private string queryCampoHoja;
+        private string readerMDBString;
         public dataStorage()
         {
             defaultFont = 12;
@@ -31,6 +34,10 @@ namespace LectorMDB.Data
             titleError = "Error";
             errorFileFormat = "Error Archivo no valido";
             errorOpening = "No se encontro: ";
+            queryMAXHoja = "SELECT MAX(HojaNro) FROM Libro";
+            queryGetOneHoja = "SELECT Hoja FROM Libro WHERE HojaNro = ";
+            queryCampoHoja = "Hoja";
+            readerMDBString = @"Provider = Microsoft.Jet.OLEDB.4.0;Data Source=";
         }
         public string getErrorOpening()
         {
@@ -73,6 +80,15 @@ namespace LectorMDB.Data
             var response = new List<int>();
             response.Add(defaultFont);
             response.Add(defaultMaxHoja);
+            return response;
+        }
+        public List<string> getBaseMBDStrings()
+        {
+            var response = new List<string>();
+            response.Add(queryMAXHoja);
+            response.Add(queryGetOneHoja);
+            response.Add(queryCampoHoja);
+            response.Add(readerMDBString);
             return response;
         }
     }

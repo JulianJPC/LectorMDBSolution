@@ -47,6 +47,7 @@ namespace LectorMDB
             InitializeComponent();
             /// Set up defaults in BaseMDB
             newMDB.getDefaultsInts(theData.getBaseMBDInts());
+            newMDB.getDefaultStrings(theData.getBaseMBDStrings());
             /// Set up fonts numbers
             var fontsNumbers = theData.getFonts();
             foreach(string oneFont in fontsNumbers)
@@ -66,16 +67,25 @@ namespace LectorMDB
 
             Application.Current.MainWindow.WindowState = WindowState.Maximized;
         }
+        /// <summary>
+        /// When the font plus button is press it changes the font size by +1.
+        /// </summary>
         private void fontPlusBoton_Click(object sender, RoutedEventArgs e)
         {
-            var newSize = Int32.Parse(fontTamaño.Text + plusFont);
+            var newSize = Int32.Parse(fontTamaño.Text) + plusFont;
             changeFontSize(newSize);
         }
+        /// <summary>
+        /// When the font minus button is press it changes the font size by -1.
+        /// </summary>
         private void fontLessBoton_Click(object sender, RoutedEventArgs e)
         {
-            var newSize = Int32.Parse(fontTamaño.Text + minusFont);
+            var newSize = Int32.Parse(fontTamaño.Text) + minusFont;
             changeFontSize(newSize);
         }
+        /// <summary>
+        /// Changes the font to the number of the combo that is selected.
+        /// </summary>
         private void fontCombo_DropDownClosed(object sender, EventArgs e)
         {
             if(fontCombo.SelectedItem is string)
@@ -84,6 +94,9 @@ namespace LectorMDB
                 changeFontSize(newSize);
             }  
         }
+        /// <summary>
+        /// Changes the font to the number of the combo that is selected.
+        /// </summary>
         private void fontCombo_KeyDown(object sender, KeyEventArgs e)
         {
             if (fontCombo.SelectedItem is string)
@@ -92,6 +105,9 @@ namespace LectorMDB
                 changeFontSize(newSize);
             }
         }
+        /// <summary>
+        /// Changes the font to the number of the combo that is selected.
+        /// </summary>
         private void fontCombo_KeyUp(object sender, KeyEventArgs e)
         {
             if (fontCombo.SelectedItem is string)
@@ -100,10 +116,11 @@ namespace LectorMDB
                 changeFontSize(newSize);
             }
         }
+        /// <summary>
+        /// Shows the dialog to open the MDB file. If correct its set up the file in the newMDB and set up variables in the window
+        /// and change the page number to one.
+        /// </summary>
         private void CommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
-        /*
-         * Open file explorer to open MDB File. Acepts diferent types of MDB configurations.
-         */
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();// Set filter for file extension and default file extension
             dlg.DefaultExt = defaultExt;
@@ -116,7 +133,10 @@ namespace LectorMDB
                 string pathMDB = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(dlg.FileName), fileNameLimpio, contentFile);     
                 if (File.Exists(pathMDB))
                 {
-                    loadMDBFile(fileNameLimpio, pathMDB);
+                    newMDB.setUpNewBook(pathMDB);
+                    nombreMDB.Text = fileNameLimpio;
+                    textoHojaFinal.Text = newMDB.numeroHojaMaxima.ToString();
+                    CambiarHoja(1);
                 }
                 else
                 {
@@ -129,96 +149,29 @@ namespace LectorMDB
             }
         }
 
-        private void CommandBinding_Executed_1(object sender, ExecutedRoutedEventArgs e)
-        /*
-         * Event press D key. Changes to next page
-         */
-        {
-            if (textoHojaFinal.Text != "/0" & newMDB.numeroHojaMaxima != newMDB.numeroHojaActual)
-            {
-                CambiarHoja(newMDB.numeroHojaActual + 1);
-            }
-        }
-        private void CommandBinding_Executed_2(object sender, ExecutedRoutedEventArgs e)
-        /*
-         * Event press A key. Changes to next page
-         */
-        {
-            if (textoHojaFinal.Text != "/0" & newMDB.numeroHojaActual != 1)
-            {
-                CambiarHoja(newMDB.numeroHojaActual - 1);
-            }
-        }
-        private void CommandBinding_Executed_3(object sender, ExecutedRoutedEventArgs e)
-        /*
-         * Event press W key. Changes to next page
-         */
-        {
-            if (newMDB.numeroHojaMaxima != -1)
-            {
-                CambiarHoja(1);
-            }
-        }
-        private void CommandBinding_Executed_4(object sender, ExecutedRoutedEventArgs e)
-        /*
-         * Event press S key. Changes to next page
-         */
-        {
-            if (newMDB.numeroHojaMaxima != -1)
-            {
-                CambiarHoja(newMDB.numeroHojaMaxima);
-            }
-
-        }
-        private void CommandBinding_Executed_5(object sender, ExecutedRoutedEventArgs e)
-        /*
-         *  Event when R key is pressed. Exit Application.
-         */
-        {
-            Application.Current.Shutdown();
-        }
+        /// <summary>
+        /// Takes the text in numeroH if is a number and is a valid page number it change to that page.
+        /// If not it change numeroH to newMDB.numeroHojaActual.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void irAHoja_Click(object sender, RoutedEventArgs e)
-        /*
-         * Event when irAHoja is clicked. Changes to the given numer of page.
-         */
         {
-            int nH = Convert.ToInt32(numeroH.Text);
-            if (nH <= newMDB.numeroHojaMaxima)
+            int nH = 0;
+            var isNumber = Int32.TryParse(numeroH.Text, out nH);
+            var hasChange = false;
+            if (isNumber)
             {
-                CambiarHoja(nH);
+                if (nH <= newMDB.numeroHojaMaxima && nH >= 1)
+                {
+                    CambiarHoja(nH);
+                    hasChange = true;
+                }
             }
-            else
+            if (!hasChange)
             {
                 numeroH.Text = newMDB.numeroHojaActual.ToString();
             }
-        }
-        private void numeroH_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        /*
-         *  Event before a value is given to numeroH. Deletes all values that aren`t a number.
-         */
-        {
-            Regex regex = new Regex("[^0-9]+");
-            e.Handled = regex.IsMatch(e.Text);
-        }
-        private void numeroH_KeyDown(object sender, KeyEventArgs e)
-        /*
-         * Event when a key is pressed in numeroH. If the key is return, changes sheet to the text in numeroH.
-         */
-        {
-            if (e.Key == Key.Return)
-            {
-                int nH = Convert.ToInt32(numeroH.Text);
-                if (nH <= newMDB.numeroHojaMaxima)
-                {
-                    CambiarHoja(nH);
-                }
-                else
-                {
-                    numeroH.Text = newMDB.numeroHojaActual.ToString();
-                }
-                irAHoja.Focus();
-            }
-            
         }
         /// <summary>
         /// Given new font size it changes and reloads the container
@@ -234,28 +187,22 @@ namespace LectorMDB
                 ContenidoMDB.FontSize = newMDB.fontSize;
             }
         }
-        private void loadMDBFile(string shortName, string pathToMDBWithInfo)
-        {
-            /*
-             *  Refreshes nombreMDB and textoHojaFinal and set newMDB with the information of the new File.
-             */
-            nombreMDB.Text = shortName;
-            newMDB.path = pathToMDBWithInfo;
-            CambiarHoja(1);
-            newMDB.setHojaMaxima();
-            textoHojaFinal.Text = newMDB.numeroHojaMaxima.ToString();
-        }
+        /// <summary>
+        /// Given the new number of hoja it searchs for it in the book. If its valid
+        /// it will reload the ContenidoMDB with that hoja.
+        /// </summary>
+        /// <param name="numeroDeHoja"></param>
         private void CambiarHoja(int numeroDeHoja)
-        /*
-         *  Given a numeroDeHoja, changes sheet in newMDB and Contenido MDB.
-         */
         {
-            newMDB.darHoja(numeroDeHoja);
-            numeroH.Text = numeroDeHoja.ToString();
-            ContenidoMDB.SelectAll();
-            ContenidoMDB.Selection.Text = "";
-            ContenidoMDB.AppendText(newMDB.hojaActual);
-            ContenidoMDB.Document.PageWidth = newMDB.newSizeRichBox();
+            var hasChange = newMDB.BuscarHoja(numeroDeHoja);
+            if (hasChange)
+            {
+                numeroH.Text = numeroDeHoja.ToString();
+                ContenidoMDB.SelectAll();
+                ContenidoMDB.Selection.Text = "";
+                ContenidoMDB.AppendText(newMDB.hojaActual);
+                ContenidoMDB.Document.PageWidth = newMDB.newSizeRichBox();
+            }
         }
 
         public void GeneratePdf(string htmlPdf, string locationPDF)
@@ -281,6 +228,104 @@ namespace LectorMDB
         {
             PrintWindow pw = new PrintWindow(newMDB);
             pw.Show();
+        }
+
+        /// <summary>
+        /// Changes to the next page of the book.
+        /// </summary>
+        private void CommandBinding_Executed_1(object sender, ExecutedRoutedEventArgs e)
+        {
+            CambiarHoja(newMDB.numeroHojaActual + 1);
+        }
+        /// <summary>
+        /// Changes to the previous page of the book.
+        /// </summary>
+        private void CommandBinding_Executed_2(object sender, ExecutedRoutedEventArgs e)
+        {
+            CambiarHoja(newMDB.numeroHojaActual - 1);
+        }
+        /// <summary>
+        /// Changes to the first page of the book.
+        /// </summary>
+        private void CommandBinding_Executed_3(object sender, ExecutedRoutedEventArgs e)
+        {
+            CambiarHoja(1);
+        }
+        /// <summary>
+        /// Changes to the last page of the book.
+        /// </summary>
+        private void CommandBinding_Executed_4(object sender, ExecutedRoutedEventArgs e)
+        {
+            CambiarHoja(newMDB.numeroHojaMaxima);
+        }
+        /// <summary>
+        /// Close application.
+        /// </summary>
+        private void CommandBinding_Executed_5(object sender, ExecutedRoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private void buscar_Click(object sender, RoutedEventArgs e)
+        {
+            if(newMDB.path == null)
+            {
+                return;
+            }
+            var inputWin = new windows.inputBuscar();
+            inputWin.Owner = this; // So it centers on the main window
+            if (inputWin.ShowDialog() == true)
+            {
+                var foundText = false;
+                var counter = newMDB.numeroHojaActual;
+                while(counter <= newMDB.numeroHojaMaxima)
+                {
+                    if (newMDB.BuscarHojaRaw(counter).Contains(inputWin.InputText))
+                    {
+                        CambiarHoja(counter);
+                        HighlightText(ContenidoMDB, inputWin.InputText, Brushes.Red);
+                        foundText = true;
+                        break;
+                    }
+                    counter++;
+                }
+                counter = 1;
+                if (!foundText)
+                {
+                    
+                    while(counter <= newMDB.numeroHojaActual)
+                    {
+                        if (newMDB.BuscarHojaRaw(counter).Contains(inputWin.InputText))
+                        {
+                            CambiarHoja(counter);
+                            HighlightText(ContenidoMDB, inputWin.InputText, Brushes.Red);
+                            break;
+                        }
+                        counter++;
+                    }
+                }
+            }
+        }
+        private void HighlightText(System.Windows.Controls.RichTextBox richTextBox, string searchText, Brush color)
+        {
+            TextRange text = new TextRange(richTextBox.Document.ContentStart, richTextBox.Document.ContentEnd);
+
+            // Find the text
+            TextPointer current = text.Start.GetInsertionPosition(LogicalDirection.Forward);
+            while (current != null)
+            {
+                string textInRun = current.GetTextInRun(LogicalDirection.Forward);
+                int indexInRun = textInRun.IndexOf(searchText, System.StringComparison.OrdinalIgnoreCase);
+                if (indexInRun >= 0)
+                {
+                    TextPointer start = current.GetPositionAtOffset(indexInRun);
+                    TextPointer end = start.GetPositionAtOffset(searchText.Length);
+
+                    var selection = new TextRange(start, end);
+                    selection.ApplyPropertyValue(TextElement.ForegroundProperty, color);
+                }
+                current = current.GetNextContextPosition(LogicalDirection.Forward);
+            }
         }
     }
 }

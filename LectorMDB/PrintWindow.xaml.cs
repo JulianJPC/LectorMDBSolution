@@ -27,7 +27,7 @@ namespace LectorMDB
         public PrintWindow(Clases.BaseMDB libroDado)
         {
             InitializeComponent();
-            libroAImprimir = new Clases.BaseMDB(12);
+            libroAImprimir = new Clases.BaseMDB();
             libroAImprimir.path = libroDado.path;
             libroAImprimir.hojaActual = libroDado.hojaActual;
             libroAImprimir.numeroHojaActual = libroDado.numeroHojaActual;
@@ -123,7 +123,7 @@ namespace LectorMDB
                     doc.FontFamily = new FontFamily("Courier New");
                     for (int i = hojaInicial; i <= hojaFinal; i++)
                     {
-                        libroAImprimir.darHoja(i);
+                        libroAImprimir.BuscarHoja(i);
                         doc.Blocks.Add(new System.Windows.Documents.Paragraph(new Run(libroAImprimir.hojaActual)) { BreakPageBefore = true }) ;
                     }
                     DocumentPaginator paginator = ((IDocumentPaginatorSource)doc).DocumentPaginator;
