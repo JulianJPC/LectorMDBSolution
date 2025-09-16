@@ -21,6 +21,7 @@ namespace LectorMDB.Data
         private string queryGetOneHoja;
         private string queryCampoHoja;
         private string readerMDBString;
+        private string fieldHojaMAX;
         private List<string> tiposHojas;
         private List<string> orientaciones;
         private List<string> printConfig;
@@ -46,6 +47,7 @@ namespace LectorMDB.Data
             orientaciones = new List<string> { "Horizontal", "Vertical" };
             printConfig = new List<string> { "        Una Hoja         ", "Varias Hojas Consecutivas" };
             fontPrintSizes = new List<string> { "6", "7", "8", "9", "10", "11", "12" };
+            fieldHojaMAX = "Expr1000";
         }
         public List<string> getFPS()
         {
@@ -63,41 +65,37 @@ namespace LectorMDB.Data
         {
             return tiposHojas;
         }
-        public string getErrorOpening()
+
+        public string getReaderString()
         {
-            return errorOpening;
+            return readerMDBString;
         }
-        public string getErrorFileFormat()
+        public querysData getQuerys()
         {
-            return errorFileFormat;
+            var response = new querysData();
+            response.setMaxHojaNumber(queryMAXHoja);
+            response.setOneHoja(queryGetOneHoja);
+            response.setfieldNameHojaMAX(fieldHojaMAX);
+            return response;
         }
-        public string getTitleError()
+        public dialogueData getDialogue()
         {
-            return titleError;
+            var response = new dialogueData();
+            response.setDefaultExt(defaultExt);
+            response.setFilterExt(filterExt);
+            response.setErrorWindowTitle(titleError);
+            response.setErrorWindowWrongFile(errorFileFormat);
+            response.setErrorWindowNotContentFile(errorOpening);
+            response.setFileOfHojas(contentFile);
+            return response;
         }
-        public string getContentFile()
+        public fontData getFont()
         {
-            return contentFile;
-        }
-        public string getFilterExt()
-        {
-            return filterExt;
-        }
-        public string getDefExt()
-        {
-            return defaultExt;
-        }
-        public int getChangePlus()
-        {
-            return fontChangePlusAmount;
-        }
-        public int getChangeMinus()
-        {
-            return fontChangeMinusAmount;
-        }
-        public List<string> getFonts()
-        {
-            return fontsNumbers;
+            var response = new fontData();
+            response.setPlus(fontChangePlusAmount);
+            response.setMinus(fontChangeMinusAmount);
+            response.setCombo(fontsNumbers);
+            return response;
         }
         public List<int> getBaseMBDInts()
         {
@@ -109,8 +107,8 @@ namespace LectorMDB.Data
         public List<string> getBaseMBDStrings()
         {
             var response = new List<string>();
-            response.Add(queryMAXHoja);
-            response.Add(queryGetOneHoja);
+            //response.Add(queryMAXHoja);
+            //response.Add(queryGetOneHoja);
             response.Add(queryCampoHoja);
             response.Add(readerMDBString);
             return response;

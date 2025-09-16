@@ -31,39 +31,27 @@ namespace LectorMDB
     public partial class MainWindow : Window
     {
         /// Main Clases
-        Clases.BaseMDB newMDB = new Clases.BaseMDB();
         Data.dataStorage theData = new Data.dataStorage();
-        int plusFont;
-        int minusFont;
-        char dirSep;
-        string defaultExt;
-        string filterExt;
-        string contentFile;
-        string titleError;
-        string errorFileFormat;
-        string errorOpening;
+        MDBConexion.MDBConexion theMDBConexion = new MDBConexion.MDBConexion();
+        Data.fontData dFont;
+        Data.dialogueData dDialogue;
+        Data.querysData dQuerys;
+        Clases.Libro libroActual;
+
         public MainWindow()
         {
             InitializeComponent();
-            /// Set up defaults in BaseMDB
-            newMDB.getDefaultsInts(theData.getBaseMBDInts());
-            newMDB.getDefaultStrings(theData.getBaseMBDStrings());
-            /// Set up fonts numbers
-            var fontsNumbers = theData.getFonts();
-            foreach(string oneFont in fontsNumbers)
+            /// Get Datas
+            dFont = theData.getFont();
+            dDialogue = theData.getDialogue();
+            dQuerys = theData.getQuerys();
+            theMDBConexion.setConextionString(theData.getReaderString());
+            /// Set up fonts combo
+            foreach (string oneFont in dFont.combo)
             {
                 fontCombo.Items.Add(oneFont);
             }
-            fontCombo.SelectedItem = fontsNumbers[1];
-            plusFont = theData.getChangePlus();
-            minusFont = theData.getChangeMinus();
-            dirSep = System.IO.Path.DirectorySeparatorChar;
-            defaultExt = theData.getDefExt();
-            filterExt = theData.getFilterExt();
-            contentFile = theData.getContentFile();
-            titleError = theData.getTitleError();
-            errorFileFormat = theData.getErrorFileFormat();
-            errorOpening = theData.getErrorOpening();
+            fontCombo.SelectedItem = dFont.combo[1];
 
             Application.Current.MainWindow.WindowState = WindowState.Maximized;
         }
@@ -72,7 +60,7 @@ namespace LectorMDB
         /// </summary>
         private void fontPlusBoton_Click(object sender, RoutedEventArgs e)
         {
-            var newSize = Int32.Parse(fontTamaño.Text) + plusFont;
+            var newSize = Int32.Parse(fontTamaño.Text) + dFont.plus;
             changeFontSize(newSize);
         }
         /// <summary>
@@ -80,7 +68,7 @@ namespace LectorMDB
         /// </summary>
         private void fontLessBoton_Click(object sender, RoutedEventArgs e)
         {
-            var newSize = Int32.Parse(fontTamaño.Text) + minusFont;
+            var newSize = Int32.Parse(fontTamaño.Text) + dFont.minus;
             changeFontSize(newSize);
         }
         /// <summary>
@@ -123,16 +111,21 @@ namespace LectorMDB
         private void CommandBinding_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();// Set filter for file extension and default file extension
-            dlg.DefaultExt = defaultExt;
-            dlg.Filter = filterExt;
+            dlg.DefaultExt = dDialogue.defaultExtension;
+            dlg.Filter = dDialogue.filterExtension;
             Nullable<bool> result = dlg.ShowDialog();// Display OpenFileDialog by calling ShowDialog method 
 
             if (result == true)// Get the selected file name and display in a TextBox 
             {
                 string fileNameLimpio = System.IO.Path.GetFileNameWithoutExtension(dlg.FileName);
-                string pathMDB = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(dlg.FileName), fileNameLimpio, contentFile);     
+                string pathMDB = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(dlg.FileName), fileNameLimpio, dDialogue.errorWindowNotContentFile);     
                 if (File.Exists(pathMDB))
                 {
+                    ///Set up of new libro
+                    libroActual = new Clases.Libro();
+                    libroActual.setPath(pathMDB);
+                    var numeroHojaMax = theMDBConexion.getSimple(dQuerys.getMaxHojaNumber, libroActual.path, dQuerys.fieldNameHojaMAX);
+                    libroActual.numeroHojaMaxima = numeroHojaMax;
                     newMDB.setUpNewBook(pathMDB);
                     nombreMDB.Text = fileNameLimpio;
                     textoHojaFinal.Text = newMDB.numeroHojaMaxima.ToString();
@@ -140,12 +133,12 @@ namespace LectorMDB
                 }
                 else
                 {
-                    MessageBox.Show($"{errorOpening}{pathMDB}.", titleError);
+                    MessageBox.Show($"{dDialogue.errorWindowNotContentFile}{pathMDB}.", dDialogue.errorWindowTitle);
                 }
             }
             else
             {
-                MessageBox.Show(errorFileFormat, titleError);
+                MessageBox.Show(dDialogue.errorWindowWrongFile, dDialogue.errorWindowTitle);
             }
         }
 
