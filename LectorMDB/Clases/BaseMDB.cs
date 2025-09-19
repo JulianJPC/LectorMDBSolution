@@ -21,11 +21,7 @@ namespace LectorMDB.Clases
         private string queryCampoHoja { get; set; }
         private string readerMDBString { get; set; }
 
-        public void setUpNewBook(string newPath)
-        {
-            path = newPath;
-            setHojaMaxima();
-        }
+
         public void getDefaultsInts(List<int> values)
         {
             fontSize = values[0];
@@ -39,49 +35,6 @@ namespace LectorMDB.Clases
             readerMDBString = values[3];
         }
 
-        /// <summary>
-        ///  Given a number of sheet changes hojaActual, numeroHojaActual and largoHojaActual.
-        /// </summary>
-        public bool BuscarHoja(int numeroDeHoja)
-        {
-            var hasChange = false;
-            if(numeroDeHoja >= 1 & numeroDeHoja <= numeroHojaMaxima & path != null)
-            {
-                numeroHojaActual = numeroDeHoja;
-                DataTable infoHoja = readMDB(queryGetOneHoja + numeroHojaActual.ToString());
-                hojaActual = getInfoDataTable(infoHoja, queryCampoHoja)[0];
-                getLargoActual();
-                hasChange = true;
-            }
-            return hasChange;
-        }
-        private void getLargoActual()
-        {
-            largoHojaActual = 0;
-            foreach (string linea in hojaActual.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
-            {
-                if (linea.Length > largoHojaActual)
-                {
-                    largoHojaActual = linea.Length;
-                }
-            }
-        }
-        /// <summary>
-        /// Searches in the MDB the max number of page and gives its value to numeroHojaMaxima
-        /// </summary>
-        public void setHojaMaxima()
-        {
-            DataTable infoHoja = readMDB(queryMAXHoja);
-            numeroHojaMaxima = Convert.ToInt32(getInfoDataTable(infoHoja, "Expr1000")[0]);
-        }
-        /// <summary>
-        ///  Return large of richBox, taking into account fontsize and largoHojaActual.
-        /// </summary>
-        public int newSizeRichBox()
-        {
-            float cantidad = Convert.ToSingle(4.9) + (Convert.ToSingle(0.6) * (Convert.ToSingle(fontSize) - 8));
-            return Convert.ToInt32(largoHojaActual * cantidad);
-        }
 
         public int searchHojaText(string textToSearch)
         {

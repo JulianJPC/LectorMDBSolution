@@ -26,6 +26,12 @@ namespace LectorMDB.Data
         private List<string> orientaciones;
         private List<string> printConfig;
         private List<string> fontPrintSizes;
+        private string titleNP;
+        private string textNP;
+        private string titleErrorNP;
+        private string textErrorNP;
+        private string titleErrorCambiarHoja;
+        private string textErrorCambiarHoja;
         public dataStorage()
         {
             defaultFont = 12;
@@ -40,7 +46,7 @@ namespace LectorMDB.Data
             errorFileFormat = "Error Archivo no valido";
             errorOpening = "No se encontro: ";
             queryMAXHoja = "SELECT MAX(HojaNro) FROM Libro";
-            queryGetOneHoja = "SELECT Hoja FROM Libro WHERE HojaNro = ";
+            queryGetOneHoja = "SELECT Hoja FROM Libro WHERE HojaNro = ?";
             queryCampoHoja = "Hoja";
             readerMDBString = @"Provider = Microsoft.Jet.OLEDB.4.0;Data Source=";
             tiposHojas = new List<string> { "Carta", "A4", "A5", "Ejecutivo", "Legal" };
@@ -48,6 +54,12 @@ namespace LectorMDB.Data
             printConfig = new List<string> { "        Una Hoja         ", "Varias Hojas Consecutivas" };
             fontPrintSizes = new List<string> { "6", "7", "8", "9", "10", "11", "12" };
             fieldHojaMAX = "Expr1000";
+            titleNP = "Número de página";
+            textNP = "Escribir número de página:";
+            titleErrorNP = "Error";
+            textErrorNP = "Número de página no valido.";
+            titleErrorCambiarHoja = "Error";
+            textErrorCambiarHoja = "Número de hoja no esta en el rango de hojas";
         }
         public List<string> getFPS()
         {
@@ -75,7 +87,8 @@ namespace LectorMDB.Data
             var response = new querysData();
             response.setMaxHojaNumber(queryMAXHoja);
             response.setOneHoja(queryGetOneHoja);
-            response.setfieldNameHojaMAX(fieldHojaMAX);
+            response.setFieldNameHojaMAX(fieldHojaMAX);
+            response.setFieldHojaText(queryCampoHoja);
             return response;
         }
         public dialogueData getDialogue()
@@ -97,6 +110,18 @@ namespace LectorMDB.Data
             response.setCombo(fontsNumbers);
             return response;
         }
+        public inputsData getInputs()
+        {
+            var response = new inputsData();
+            response.setErrorTextInputNP(textErrorNP);
+            response.setErrorTitleInputNP(titleErrorNP);
+            response.setTextInputNP(textNP);
+            response.setTitleInputNP(titleNP);
+            response.setErrorCambiarHoja(textErrorCambiarHoja);
+            response.setTitleErrorCambiarHoja(titleErrorCambiarHoja);
+
+            return response;
+        }
         public List<int> getBaseMBDInts()
         {
             var response = new List<int>();
@@ -104,14 +129,6 @@ namespace LectorMDB.Data
             response.Add(defaultMaxHoja);
             return response;
         }
-        public List<string> getBaseMBDStrings()
-        {
-            var response = new List<string>();
-            //response.Add(queryMAXHoja);
-            //response.Add(queryGetOneHoja);
-            response.Add(queryCampoHoja);
-            response.Add(readerMDBString);
-            return response;
-        }
+        
     }
 }

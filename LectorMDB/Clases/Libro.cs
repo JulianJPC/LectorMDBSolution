@@ -13,6 +13,18 @@ namespace LectorMDB.Clases
         {
             path = value;
         }
-        
+        public void setHojaMax(int value)
+        {
+            numeroHojaMaxima = value;
+        }
+        public bool isValidNumberHoja(int numberHoja)
+        {
+            var response = false;
+            if (numberHoja >= 1 & numberHoja <= numeroHojaMaxima)
+            {
+                response = true;
+            }
+            return response;
+        }
     }
 }

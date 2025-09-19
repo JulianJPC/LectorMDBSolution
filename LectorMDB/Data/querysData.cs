@@ -9,8 +9,9 @@ namespace LectorMDB.Data
         public string getMaxHojaNumber { get; private set; }
         public string getOneHoja { get; private set; }
         public string fieldNameHojaMAX { get; private set; }
+        public string fieldHojaText { get; private set; }
 
-        public void setfieldNameHojaMAX(string value)
+        public void setFieldNameHojaMAX(string value)
         {
             fieldNameHojaMAX = value;
         }
@@ -21,6 +22,10 @@ namespace LectorMDB.Data
         public void setOneHoja(string value)
         {
             getOneHoja = value;
+        }
+        public void setFieldHojaText(string value)
+        {
+            fieldHojaText = value;
         }
     }
 }

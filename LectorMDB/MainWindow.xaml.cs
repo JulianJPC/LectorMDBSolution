@@ -36,6 +36,7 @@ namespace LectorMDB
         Data.fontData dFont;
         Data.dialogueData dDialogue;
         Data.querysData dQuerys;
+        Data.inputsData dInputs;
         Clases.Libro libroActual;
 
         public MainWindow()
@@ -113,35 +114,53 @@ namespace LectorMDB
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();// Set filter for file extension and default file extension
             dlg.DefaultExt = dDialogue.defaultExtension;
             dlg.Filter = dDialogue.filterExtension;
-            Nullable<bool> result = dlg.ShowDialog();// Display OpenFileDialog by calling ShowDialog method 
+            var result = dlg.ShowDialog();// Display OpenFileDialog by calling ShowDialog method 
+            var existMDBContent = false;
+            var existMaxHoja = false;
+            var fileNameLimpio = "";
+            var pathMDB = "";
+            var maxHoja = 0;
+            var errorResult = "";
 
-            if (result == true)// Get the selected file name and display in a TextBox 
+            if(result == true)
             {
-                string fileNameLimpio = System.IO.Path.GetFileNameWithoutExtension(dlg.FileName);
-                string pathMDB = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(dlg.FileName), fileNameLimpio, dDialogue.errorWindowNotContentFile);     
-                if (File.Exists(pathMDB))
-                {
-                    ///Set up of new libro
-                    libroActual = new Clases.Libro();
-                    libroActual.setPath(pathMDB);
-                    var numeroHojaMax = theMDBConexion.getSimple(dQuerys.getMaxHojaNumber, libroActual.path, dQuerys.fieldNameHojaMAX);
-                    libroActual.numeroHojaMaxima = numeroHojaMax;
-                    newMDB.setUpNewBook(pathMDB);
-                    nombreMDB.Text = fileNameLimpio;
-                    textoHojaFinal.Text = newMDB.numeroHojaMaxima.ToString();
-                    CambiarHoja(1);
-                }
-                else
-                {
-                    MessageBox.Show($"{dDialogue.errorWindowNotContentFile}{pathMDB}.", dDialogue.errorWindowTitle);
-                }
+                fileNameLimpio = System.IO.Path.GetFileNameWithoutExtension(dlg.FileName);
+                pathMDB = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(dlg.FileName), fileNameLimpio, dDialogue.fileOfHojas);
+                existMDBContent = File.Exists(pathMDB);
             }
             else
             {
-                MessageBox.Show(dDialogue.errorWindowWrongFile, dDialogue.errorWindowTitle);
+                errorResult = dDialogue.errorWindowWrongFile;
+            }
+
+            if (existMDBContent)
+            {
+                var resultQuery = theMDBConexion.getSimple(dQuerys.getMaxHojaNumber, pathMDB, dQuerys.fieldNameHojaMAX);
+                existMaxHoja = Int32.TryParse(resultQuery[0], out maxHoja);
+            }
+            else
+            {
+                errorResult = $"{dDialogue.errorWindowNotContentFile}{pathMDB}";
+            }
+
+            if(existMDBContent & existMaxHoja)
+            {
+                setUpNewLibro(pathMDB, maxHoja, fileNameLimpio);
+            }
+            else
+            {
+                MessageBox.Show(errorResult, dDialogue.errorWindowTitle);
             }
         }
-
+        private void setUpNewLibro(string path, int maxHoja, string shortName)
+        {
+            libroActual = new Clases.Libro();
+            libroActual.setPath(path);
+            libroActual.setHojaMax(maxHoja);
+            nombreMDB.Text = shortName;
+            textoHojaFinal.Text = libroActual.numeroHojaMaxima.ToString();
+            CambiarHoja(1);
+        }
         /// <summary>
         /// Takes the text in numeroH if is a number and is a valid page number it change to that page.
         /// If not it change numeroH to newMDB.numeroHojaActual.
@@ -151,19 +170,20 @@ namespace LectorMDB
         private void irAHoja_Click(object sender, RoutedEventArgs e)
         {
             int nH = 0;
-            var isNumber = Int32.TryParse(numeroH.Text, out nH);
-            var hasChange = false;
-            if (isNumber)
+            var inputWin = new windows.inputNumberPage(dInputs.textInputNP, dInputs.titleInputNP);
+            inputWin.Owner = this; // So it centers on the main window
+            if (inputWin.ShowDialog() == true)
             {
-                if (nH <= newMDB.numeroHojaMaxima && nH >= 1)
+                var numberPage = inputWin.txtInput;
+                var isNumber = Int32.TryParse(numeroH.Text, out nH);
+                if (isNumber)
                 {
                     CambiarHoja(nH);
-                    hasChange = true;
                 }
-            }
-            if (!hasChange)
-            {
-                numeroH.Text = newMDB.numeroHojaActual.ToString();
+                else
+                {
+                    MessageBox.Show(dInputs.errorTextInputNP, dInputs.errorTitleInputNP);
+                }
             }
         }
         /// <summary>
@@ -187,17 +207,36 @@ namespace LectorMDB
         /// <param name="numeroDeHoja"></param>
         private void CambiarHoja(int numeroDeHoja)
         {
-            var hasChange = newMDB.BuscarHoja(numeroDeHoja);
-            if (hasChange)
+            var isValidNumber = libroActual.isValidNumberHoja(numeroDeHoja);
+            if (isValidNumber)
             {
+                var paramsQuery = new List<string> { "?" };
+                var valuesParamsQuery = new List<string> { numeroDeHoja.ToString() };
+                var rawHoja = theMDBConexion.getSimple(dQuerys.getOneHoja, libroActual.path, paramsQuery, valuesParamsQuery, dQuerys.fieldHojaText)[0];
                 numeroH.Text = numeroDeHoja.ToString();
                 ContenidoMDB.SelectAll();
                 ContenidoMDB.Selection.Text = "";
-                ContenidoMDB.AppendText(newMDB.hojaActual);
-                ContenidoMDB.Document.PageWidth = newMDB.newSizeRichBox();
+                ContenidoMDB.AppendText(rawHoja);
+                ContenidoMDB.Document.PageWidth = getNewSizePage(rawHoja);
+            }
+            else
+            {
+                MessageBox.Show(dInputs.errorCambiarHoja, dInputs.titleErrorCambiarHoja);
             }
         }
-
+        private int getNewSizePage(string rawHoja)
+        {
+            var largo = 0;
+            foreach (string linea in rawHoja.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
+            {
+                if (linea.Length > largo)
+                {
+                    largo = linea.Length;
+                }
+            }
+            float cantidad = Convert.ToSingle(4.9) + (Convert.ToSingle(0.6) * (Convert.ToSingle(fontTamaño.Text) - 8));
+            return Convert.ToInt32(largo * cantidad);
+        }
         public void GeneratePdf(string htmlPdf, string locationPDF)
         {
             var pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
