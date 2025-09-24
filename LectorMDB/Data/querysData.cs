@@ -8,9 +8,20 @@ namespace LectorMDB.Data
     {
         public string getMaxHojaNumber { get; private set; }
         public string getOneHoja { get; private set; }
+        public string searchTextHojas { get; private set; }
         public string fieldNameHojaMAX { get; private set; }
         public string fieldHojaText { get; private set; }
+        public string fieldHojaNumero { get; private set; }
+        public string oneParam { get; private set; }
 
+        public void setFieldHojaNumero(string value)
+        {
+            fieldHojaNumero = value;
+        }
+        public void setOneParam(string value)
+        {
+            oneParam = value;
+        }
         public void setFieldNameHojaMAX(string value)
         {
             fieldNameHojaMAX = value;
@@ -26,6 +37,10 @@ namespace LectorMDB.Data
         public void setFieldHojaText(string value)
         {
             fieldHojaText = value;
+        }
+        public void setSearchTextHojas(string value)
+        {
+            searchTextHojas = value;
         }
     }
 }

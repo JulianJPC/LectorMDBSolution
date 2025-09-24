@@ -32,6 +32,12 @@ namespace LectorMDB.Data
         private string textErrorNP;
         private string titleErrorCambiarHoja;
         private string textErrorCambiarHoja;
+        private string searchQuery;
+        private string oneParam;
+        private string buscarErrorLibro;
+        private string buscarErrorInput;
+        private string buscarErrorNoMatch;
+        private string buscarErrorTitle;
         public dataStorage()
         {
             defaultFont = 12;
@@ -60,6 +66,13 @@ namespace LectorMDB.Data
             textErrorNP = "Número de página no valido.";
             titleErrorCambiarHoja = "Error";
             textErrorCambiarHoja = "Número de hoja no esta en el rango de hojas";
+            searchQuery = "SELECT HojaNro FROM Libro WHERE Hoja LIKE '%?%';";
+            oneParam = "?";
+            buscarErrorLibro = "No esta cargado el libro.";
+            buscarErrorInput = "No hay texto a buscar.";
+            buscarErrorNoMatch = "No se encontro coincidencia.";
+            buscarErrorTitle = "Error";
+
         }
         public List<string> getFPS()
         {
@@ -82,6 +95,15 @@ namespace LectorMDB.Data
         {
             return readerMDBString;
         }
+        public buscarData getBuscar()
+        {
+            var response = new buscarData();
+            response.setErrorLibro(buscarErrorLibro);
+            response.setErrorInput(buscarErrorInput);
+            response.setErrorNoMatch(buscarErrorNoMatch);
+            response.setErrorTitle(buscarErrorTitle);
+            return response;
+        }
         public querysData getQuerys()
         {
             var response = new querysData();
@@ -89,6 +111,8 @@ namespace LectorMDB.Data
             response.setOneHoja(queryGetOneHoja);
             response.setFieldNameHojaMAX(fieldHojaMAX);
             response.setFieldHojaText(queryCampoHoja);
+            response.setSearchTextHojas(searchQuery);
+            response.setOneParam(oneParam);
             return response;
         }
         public dialogueData getDialogue()

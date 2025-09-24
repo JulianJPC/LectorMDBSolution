@@ -37,6 +37,7 @@ namespace LectorMDB
         Data.dialogueData dDialogue;
         Data.querysData dQuerys;
         Data.inputsData dInputs;
+        Data.buscarData dBuscar;
         Clases.Libro libroActual;
 
         public MainWindow()
@@ -46,6 +47,7 @@ namespace LectorMDB
             dFont = theData.getFont();
             dDialogue = theData.getDialogue();
             dQuerys = theData.getQuerys();
+            dBuscar = theData.getBuscar();
             theMDBConexion.setConextionString(theData.getReaderString());
             /// Set up fonts combo
             foreach (string oneFont in dFont.combo)
@@ -194,10 +196,9 @@ namespace LectorMDB
         {
             if (fontNew > 1)
             {
-                newMDB.fontSize = fontNew;
-                fontTamaño.Text = newMDB.fontSize.ToString();
-                ContenidoMDB.Document.PageWidth = newMDB.newSizeRichBox();
-                ContenidoMDB.FontSize = newMDB.fontSize;
+                fontTamaño.Text = fontNew.ToString();
+                ContenidoMDB.Document.PageWidth = getNewSizePage();
+                ContenidoMDB.FontSize = fontNew;
             }
         }
         /// <summary>
@@ -210,7 +211,7 @@ namespace LectorMDB
             var isValidNumber = libroActual.isValidNumberHoja(numeroDeHoja);
             if (isValidNumber)
             {
-                var paramsQuery = new List<string> { "?" };
+                var paramsQuery = new List<string> { dQuerys.oneParam };
                 var valuesParamsQuery = new List<string> { numeroDeHoja.ToString() };
                 var rawHoja = theMDBConexion.getSimple(dQuerys.getOneHoja, libroActual.path, paramsQuery, valuesParamsQuery, dQuerys.fieldHojaText)[0];
                 numeroH.Text = numeroDeHoja.ToString();
@@ -228,6 +229,20 @@ namespace LectorMDB
         {
             var largo = 0;
             foreach (string linea in rawHoja.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
+            {
+                if (linea.Length > largo)
+                {
+                    largo = linea.Length;
+                }
+            }
+            float cantidad = Convert.ToSingle(4.9) + (Convert.ToSingle(0.6) * (Convert.ToSingle(fontTamaño.Text) - 8));
+            return Convert.ToInt32(largo * cantidad);
+        }
+        private int getNewSizePage()
+        {
+            var largo = 0;
+            string text = new TextRange(ContenidoMDB.Document.ContentStart, ContenidoMDB.Document.ContentEnd).Text;
+            foreach (string linea in text.Split(new string[] { Environment.NewLine }, StringSplitOptions.None))
             {
                 if (linea.Length > largo)
                 {
@@ -275,28 +290,44 @@ namespace LectorMDB
         /// </summary>
         private void CommandBinding_Executed_1(object sender, ExecutedRoutedEventArgs e)
         {
-            CambiarHoja(newMDB.numeroHojaActual + 1);
+            var nH = 0;
+            var esNumero = Int32.TryParse(numeroH.Text, out nH);
+            if (esNumero)
+            {
+                CambiarHoja(nH + 1);
+            }
         }
         /// <summary>
         /// Changes to the previous page of the book.
         /// </summary>
         private void CommandBinding_Executed_2(object sender, ExecutedRoutedEventArgs e)
         {
-            CambiarHoja(newMDB.numeroHojaActual - 1);
+            var nH = 0;
+            var esNumero = Int32.TryParse(numeroH.Text, out nH);
+            if (esNumero)
+            {
+                CambiarHoja(nH - 1);
+            }
         }
         /// <summary>
         /// Changes to the first page of the book.
         /// </summary>
         private void CommandBinding_Executed_3(object sender, ExecutedRoutedEventArgs e)
         {
-            CambiarHoja(1);
+            if (libroActual != null)
+            {
+                CambiarHoja(1);
+            }
         }
         /// <summary>
         /// Changes to the last page of the book.
         /// </summary>
         private void CommandBinding_Executed_4(object sender, ExecutedRoutedEventArgs e)
         {
-            CambiarHoja(newMDB.numeroHojaMaxima);
+            if (libroActual != null)
+            {
+                CambiarHoja(libroActual.numeroHojaMaxima);
+            }
         }
         /// <summary>
         /// Close application.
@@ -308,24 +339,54 @@ namespace LectorMDB
 
         private void buscar_Click(object sender, RoutedEventArgs e)
         {
-            if(newMDB.path == null)
+            var tieneLibro = false;
+            var tieneInput = false;
+            var tieneResultado = false;
+            var textInput = "";
+            var numberPage = 0;
+            if(libroActual == null)
             {
-                return;
+                tieneLibro = true;
             }
-            var inputWin = new windows.inputBuscar();
-            inputWin.Owner = this; // So it centers on the main window
-            if (inputWin.ShowDialog() == true)
+            if (tieneLibro)
             {
-                var numberPage = newMDB.searchHojaText(inputWin.InputText);
-                if(numberPage != 0)
+                var inputWin = new windows.inputBuscar();
+                inputWin.Owner = this; // So it centers on the main window
+                if (inputWin.ShowDialog() == true)
                 {
-                    CambiarHoja(numberPage);
-                    HighlightText(ContenidoMDB, inputWin.InputText, Brushes.Red);
+                    textInput = inputWin.InputText;
+                    tieneInput = true;
                 }
-                else
+            }
+            if (tieneInput)
+            {
+                var paramsQuery = new List<string> { dQuerys.oneParam };
+                var valuesParamsQuery = new List<string> { textInput };
+                var pageNumberRaw = theMDBConexion.getSimple(dQuerys.searchTextHojas, libroActual.path, paramsQuery, valuesParamsQuery, dQuerys.fieldHojaNumero);
+                if (pageNumberRaw.Count > 0)
                 {
-                    MessageBox.Show("No se encontro texto.", titleError);
+                    tieneResultado = true;
+                    numberPage = Int32.Parse(pageNumberRaw[0]);
                 }
+            }
+            if (tieneResultado)
+            {
+                
+                CambiarHoja(numberPage);
+                HighlightText(ContenidoMDB, textInput, Brushes.Red);
+            }
+
+            if (!tieneLibro)
+            {
+                MessageBox.Show(dBuscar.errorLibro, dBuscar.errorTitle);
+            }
+            else if (!tieneInput)
+            {
+                MessageBox.Show(dBuscar.errorInput, dBuscar.errorTitle);
+            }
+            else if (!tieneResultado)
+            {
+                MessageBox.Show(dBuscar.errorNoMatch, dBuscar.errorTitle);
             }
         }
         private void HighlightText(System.Windows.Controls.RichTextBox richTextBox, string searchText, Brush color)
