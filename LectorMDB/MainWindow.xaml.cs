@@ -154,15 +154,6 @@ namespace LectorMDB
                 MessageBox.Show(errorResult, dDialogue.errorWindowTitle);
             }
         }
-        private void setUpNewLibro(string path, int maxHoja, string shortName)
-        {
-            libroActual = new Clases.Libro();
-            libroActual.setPath(path);
-            libroActual.setHojaMax(maxHoja);
-            nombreMDB.Text = shortName;
-            textoHojaFinal.Text = libroActual.numeroHojaMaxima.ToString();
-            CambiarHoja(1);
-        }
         /// <summary>
         /// Takes the text in numeroH if is a number and is a valid page number it change to that page.
         /// If not it change numeroH to newMDB.numeroHojaActual.
@@ -188,6 +179,16 @@ namespace LectorMDB
                 }
             }
         }
+        private void setUpNewLibro(string path, int maxHoja, string shortName)
+        {
+            libroActual = new Clases.Libro();
+            libroActual.setPath(path);
+            libroActual.setHojaMax(maxHoja);
+            nombreMDB.Text = shortName;
+            textoHojaFinal.Text = libroActual.numeroHojaMaxima.ToString();
+            CambiarHoja(1);
+        }
+        
         /// <summary>
         /// Given new font size it changes and reloads the container
         /// Doesnt allow fonts bellow or equal to 1.
