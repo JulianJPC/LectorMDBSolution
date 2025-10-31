@@ -1,0 +1,65 @@
+﻿<Window x:Class="LectorMDB.windows.inputPrint"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LectorMDB.windows"
+        mc:Ignorable="d"
+        Title="inputPrint" SizeToContent="WidthAndHeight" Background="Gray" FontSize="18"
+        HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="20"/>
+            <!-- 0 -->
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <!-- 12 -->
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="20"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"/>
+            <!-- 0 -->
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <!-- 7 -->
+            <RowDefinition Height="*" />
+            <RowDefinition Height="10" />
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="textHojaTipo" Grid.Column="1" Grid.Row="1" Text="Tamaño:"></TextBlock>
+        <ComboBox x:Name="tipoHoja" Grid.Column="2" Grid.Row="1"></ComboBox>
+
+        <TextBlock x:Name="textOrientacion" Grid.Column="1" Grid.Row="2" Text="Orientación:"></TextBlock>
+        <ComboBox x:Name="orientacionHoja" Grid.Column="2" Grid.Row="2"></ComboBox>
+
+        <TextBlock x:Name="textFont" Grid.Column="1" Grid.Row="3" Text="Tamaño letra:"></TextBlock>
+        <ComboBox x:Name="fontPrint" Grid.Column="2" Grid.Row="3"></ComboBox>
+        
+        <TextBlock x:Name="textInicialNumeroHoja" Grid.Column="1" Grid.Row="4" Text="Número Hoja Inicial:"></TextBlock>
+        <TextBox x:Name="printNumeroHojaUno" Grid.Column="2" Grid.Row="4" Width="100" IsReadOnly="True"  TextWrapping="Wrap"  TextAlignment="Center"></TextBox>
+        
+        <TextBlock x:Name="textFinalNumeroHoja" Text="Número Hoja Final:" Grid.Column="1" Grid.Row="5"></TextBlock>
+        <TextBox x:Name="printNumeroHojaDos" Grid.Column="2" Grid.Row="5" Width="100" IsReadOnly="True"  TextWrapping="Wrap"  TextAlignment="Center"></TextBox>
+
+
+        <Button x:Name="printEverything" Content="Imprimir" Grid.Column="2" Grid.Row="6" Margin="0, 30, 0, 0" Click="printEverything_Click" ></Button>
+        
+    </Grid>
+</Window>

@@ -38,6 +38,7 @@ namespace LectorMDB
         Data.querysData dQuerys;
         Data.inputsData dInputs;
         Data.buscarData dBuscar;
+        Data.printData dPrint;
         Clases.Libro libroActual;
 
         public MainWindow()
@@ -48,6 +49,7 @@ namespace LectorMDB
             dDialogue = theData.getDialogue();
             dQuerys = theData.getQuerys();
             dBuscar = theData.getBuscar();
+            dPrint = theData.getPrint();
             theMDBConexion.setConextionString(theData.getReaderString());
             /// Set up fonts combo
             foreach (string oneFont in dFont.combo)
@@ -274,16 +276,123 @@ namespace LectorMDB
 
         private void printOpen_Click(object sender, RoutedEventArgs e)
         {
-            if(newMDB.path != null)
+
+            windows.inputPrint aPrintWindow = new windows.inputPrint(dPrint);
+            aPrintWindow.Show();
+
+            if (aPrintWindow.ShowDialog() == true)
             {
-                PrintWindow pw = new PrintWindow(newMDB, theData.getTH(), theData.getO(), theData.getPC(), theData.getFPS()) ;
-                pw.Show();
+                var result = aPrintWindow.theInput;
+                var pageSize = result.getPage();
+                var orient = result.getOrient();
+                var fontSize = result.getSizeFont();
+                var printRange = getPrintRage(result.startNumber, result.endNumber);
+                
+                var okInput = false;
+                if(pageSize != null || fontSize != 0 || printRange.Count > 0)
+                {
+                    okInput = true;
+                }
+
+                if (okInput)
+                {
+                    printPages(printRange[0], printRange[1], pageSize, orient, fontSize);
+                }
+
             }
-            else
-            {
-                MessageBox.Show("No hay libro cargado.", titleError);
-            }
+
+        }
+        private void printPages(int hojaInicial, int hojaFinal, PageMediaSize ps, PageOrientation po, int fs)
+        {
+            int hojaCantidad = hojaFinal - hojaInicial + 1;
+
+            var dlg = new PrintDialog();
+            dlg.PageRangeSelection = PageRangeSelection.AllPages;
+            dlg.UserPageRangeEnabled = false;
+
+            dlg.PrintTicket.PageMediaSize = ps;
+            dlg.PrintTicket.PageOrientation = po;
+            var doc = new FlowDocument();
+            doc.ColumnWidth = dlg.PrintableAreaWidth;
+            doc.PageHeight = dlg.PrintableAreaHeight;
+            doc.PageWidth = dlg.PrintableAreaWidth;
+            doc.FontSize = fs;
+            doc.FontFamily = new FontFamily("Courier New");
+
+
+            var paramsQuery = new List<string> { dQuerys.oneParam };
             
+            for (int i = hojaInicial; i <= hojaFinal; i++)
+            {
+                var valuesParamsQuery = new List<string> { i.ToString() };
+                var rawHoja = theMDBConexion.getSimple(dQuerys.getOneHoja, libroActual.path, paramsQuery, valuesParamsQuery, dQuerys.fieldHojaText)[0];
+                doc.Blocks.Add(new System.Windows.Documents.Paragraph(new Run(rawHoja)) { BreakPageBefore = true });
+            }
+            DocumentPaginator paginator = ((IDocumentPaginatorSource)doc).DocumentPaginator;
+            paginator.ComputePageCount();
+            int pagesNumber = paginator.PageCount;
+            bool aceptaImprimir = false;
+            if (pagesNumber > hojaCantidad)
+            {
+                if (MessageBox.Show("Desbordamiento. Se van imprimir " + pagesNumber.ToString() + " hojas. Deberian de ser " + hojaCantidad.ToString() + "¿Desea Continuar?", "Aviso", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                {
+                    aceptaImprimir = true;
+                }
+            }
+            else if (pagesNumber == hojaCantidad)
+            {
+                aceptaImprimir = true;
+            }
+            if (aceptaImprimir)
+            {
+                if (dlg.ShowDialog() == true)
+                {
+
+                    dlg.PrintDocument(((IDocumentPaginatorSource)doc).DocumentPaginator, "Simple document");
+                    this.Close();
+                }
+            }
+        }
+
+
+        private List<int> getPrintRage(string firstNumber, string endNumber)
+        {
+            var response = new List<int>();
+            var startNumberInt = 0;
+            var endNumberInt = 0;
+
+            var isIntStarting = Int32.TryParse(firstNumber, out startNumberInt);
+            var isIntEnding = Int32.TryParse(endNumber, out endNumberInt);
+
+            var areNumbers = false;
+            var isInRangeStart = false;
+            var isInRangeEnd = false;
+            var areInDistance = false;
+            if (isIntStarting && isIntEnding)
+            {
+                areNumbers = true;
+                if(startNumberInt > 0 && startNumberInt <= libroActual.numeroHojaMaxima)
+                {
+                    isInRangeStart = true;
+                }
+                if (endNumberInt > 0 && endNumberInt <= libroActual.numeroHojaMaxima)
+                {
+                    isInRangeStart = true;
+                }
+            }
+            if(isInRangeStart && isInRangeEnd)
+            {
+                if(startNumberInt <= endNumberInt)
+                {
+                    areInDistance = true;
+                }
+            }
+            if (areInDistance)
+            {
+                response.Add(startNumberInt);
+                response.Add(endNumberInt);
+            }
+            return response;
         }
 
         /// <summary>

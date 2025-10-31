@@ -24,7 +24,6 @@ namespace LectorMDB.Data
         private string fieldHojaMAX;
         private List<string> tiposHojas;
         private List<string> orientaciones;
-        private List<string> printConfig;
         private List<string> fontPrintSizes;
         private string titleNP;
         private string textNP;
@@ -38,6 +37,8 @@ namespace LectorMDB.Data
         private string buscarErrorInput;
         private string buscarErrorNoMatch;
         private string buscarErrorTitle;
+        private string fontToPrint;
+
         public dataStorage()
         {
             defaultFont = 12;
@@ -57,7 +58,6 @@ namespace LectorMDB.Data
             readerMDBString = @"Provider = Microsoft.Jet.OLEDB.4.0;Data Source=";
             tiposHojas = new List<string> { "Carta", "A4", "A5", "Ejecutivo", "Legal" };
             orientaciones = new List<string> { "Horizontal", "Vertical" };
-            printConfig = new List<string> { "        Una Hoja         ", "Varias Hojas Consecutivas" };
             fontPrintSizes = new List<string> { "6", "7", "8", "9", "10", "11", "12" };
             fieldHojaMAX = "Expr1000";
             titleNP = "Número de página";
@@ -72,25 +72,17 @@ namespace LectorMDB.Data
             buscarErrorInput = "No hay texto a buscar.";
             buscarErrorNoMatch = "No se encontro coincidencia.";
             buscarErrorTitle = "Error";
+            fontToPrint = "Courier New";
 
         }
-        public List<string> getFPS()
+        public printData getPrint()
         {
-            return fontPrintSizes;
+            var response = new printData();
+            response.setOrientaciones(orientaciones);
+            response.setFontSizes(fontPrintSizes);
+            response.setTiposHojas(tiposHojas);
+            return getPrint();
         }
-        public List<string> getPC()
-        {
-            return printConfig;
-        }
-        public List<string> getO()
-        {
-            return orientaciones;
-        }
-        public List<string> getTH()
-        {
-            return tiposHojas;
-        }
-
         public string getReaderString()
         {
             return readerMDBString;
