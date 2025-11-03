@@ -12,7 +12,12 @@ namespace LectorMDB.Data
         public string textInputNP { get; private set; }
         public string errorTitleInputNP { get; private set; }
         public string errorTextInputNP { get; private set; }
+        public string errorNoLibro { get; private set; }
 
+        public void setErrorNoLibro(string value)
+        {
+            errorNoLibro = value;
+        }
         public void setTitleInputNP(string value)
         {
             titleInputNP = value;

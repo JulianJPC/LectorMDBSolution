@@ -20,6 +20,7 @@ namespace LectorMDB.Data
         private string queryMAXHoja;
         private string queryGetOneHoja;
         private string queryCampoHoja;
+        private string queryGetAllHojasRange;
         private string readerMDBString;
         private string fieldHojaMAX;
         private List<string> tiposHojas;
@@ -33,12 +34,22 @@ namespace LectorMDB.Data
         private string textErrorCambiarHoja;
         private string searchQuery;
         private string oneParam;
-        private string buscarErrorLibro;
         private string buscarErrorInput;
         private string buscarErrorNoMatch;
         private string buscarErrorTitle;
         private string fontToPrint;
+        private string fieldHojaNro;
+        private string inputPrintTextHojaTipo;
+        private string inputPrintTextOrientacion;
+        private string inputPrintTextFont;
+        private string inputPrintTextInicialNumeroHoja;
+        private string inputPrintTextFinalNumeroHoja;
+        private string inputPrintButtonPrint;
+        private string inputPrintButtonExit;
+        private string inputPrintTitle;
 
+        private string printErrorInput;
+        private string printErrorTitle;
         public dataStorage()
         {
             defaultFont = 12;
@@ -66,14 +77,25 @@ namespace LectorMDB.Data
             textErrorNP = "Número de página no valido.";
             titleErrorCambiarHoja = "Error";
             textErrorCambiarHoja = "Número de hoja no esta en el rango de hojas";
-            searchQuery = "SELECT HojaNro FROM Libro WHERE Hoja LIKE '%?%';";
+            searchQuery = "SELECT HojaNro FROM Libro WHERE Hoja LIKE ?";
+            queryGetAllHojasRange = "SELECT Hoja FROM Libro WHERE HojaNro BETWEEN ? AND ?";
             oneParam = "?";
-            buscarErrorLibro = "No esta cargado el libro.";
             buscarErrorInput = "No hay texto a buscar.";
             buscarErrorNoMatch = "No se encontro coincidencia.";
             buscarErrorTitle = "Error";
             fontToPrint = "Courier New";
+            fieldHojaNro = "HojaNro";
 
+            inputPrintTextHojaTipo = "Tamaño:";
+            inputPrintTextOrientacion = "Orientación:";
+            inputPrintTextFont = "Tamaño Letra:";
+            inputPrintTextInicialNumeroHoja = "Número Hoja Inicial:";
+            inputPrintTextFinalNumeroHoja = "Número Hoja Final:";
+            inputPrintButtonPrint = "Imprimir";
+            inputPrintButtonExit = "Cancelar";
+            inputPrintTitle = "Imprimir";
+            printErrorInput = "Error con los parametros introducidos.";
+            printErrorTitle = "Error";
         }
         public printData getPrint()
         {
@@ -81,7 +103,18 @@ namespace LectorMDB.Data
             response.setOrientaciones(orientaciones);
             response.setFontSizes(fontPrintSizes);
             response.setTiposHojas(tiposHojas);
-            return getPrint();
+            response.setTextHojaTipo(inputPrintTextHojaTipo);
+            response.setTextOrientacion(inputPrintTextOrientacion);
+            response.setTextFont(inputPrintTextFont);
+            response.setTextInicialNumeroHoja(inputPrintTextInicialNumeroHoja);
+            response.setTextFinalNumeroHoja(inputPrintTextFinalNumeroHoja);
+            response.setButtonPrint(inputPrintButtonPrint);
+            response.setButtonExit(inputPrintButtonExit);
+            response.setTitle(inputPrintTitle);
+            response.setErrorInput(printErrorInput);
+            response.setErrorTitle(printErrorTitle);
+            response.setFontFamily(fontToPrint);
+            return response;
         }
         public string getReaderString()
         {
@@ -90,7 +123,6 @@ namespace LectorMDB.Data
         public buscarData getBuscar()
         {
             var response = new buscarData();
-            response.setErrorLibro(buscarErrorLibro);
             response.setErrorInput(buscarErrorInput);
             response.setErrorNoMatch(buscarErrorNoMatch);
             response.setErrorTitle(buscarErrorTitle);
@@ -105,6 +137,8 @@ namespace LectorMDB.Data
             response.setFieldHojaText(queryCampoHoja);
             response.setSearchTextHojas(searchQuery);
             response.setOneParam(oneParam);
+            response.setFieldHojaNumero(fieldHojaNro);
+            response.setGetAllHojasRange(queryGetAllHojasRange);
             return response;
         }
         public dialogueData getDialogue()
@@ -135,7 +169,6 @@ namespace LectorMDB.Data
             response.setTitleInputNP(titleNP);
             response.setErrorCambiarHoja(textErrorCambiarHoja);
             response.setTitleErrorCambiarHoja(titleErrorCambiarHoja);
-
             return response;
         }
         public List<int> getBaseMBDInts()

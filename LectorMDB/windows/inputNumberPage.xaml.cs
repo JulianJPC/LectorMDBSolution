@@ -20,9 +20,9 @@ namespace LectorMDB.windows
         public string InputText { get; private set; }
         public inputNumberPage(string text, string aTitle)
         {
+            InitializeComponent();
             messageText.Text = text;
             Title = aTitle;
-            InitializeComponent();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

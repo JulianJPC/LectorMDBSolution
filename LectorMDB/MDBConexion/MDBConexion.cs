@@ -80,6 +80,37 @@ namespace LectorMDB.MDBConexion
             }
             return myDataTable;
         }
+        private DataTable readMDBWithRegex(string query, string mdbPath, List<string> paramsNames, List<string> paramsValues)
+        {
+            string myConnectionString = readerMDBString + mdbPath + ";";
+            DataTable myDataTable = new DataTable();
+            try
+            {
+                // Open OleDb Connection
+                OleDbConnection myConnection = new OleDbConnection();
+                myConnection.ConnectionString = myConnectionString;
+                myConnection.Open();
+
+                // Execute Queries
+                OleDbCommand cmd = myConnection.CreateCommand();
+                cmd.CommandText = query;
+                for (int indexParam = 0; indexParam < paramsNames.Count; indexParam++)
+                {
+                    cmd.Parameters.AddWithValue(paramsNames[indexParam], "%" + paramsValues[indexParam] + "%");
+                }
+                OleDbDataReader reader = cmd.ExecuteReader(CommandBehavior.CloseConnection); // close conn after complete
+
+                // Load the result into a DataTable
+
+                myDataTable.Load(reader);
+                myConnection.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("OLEDB Connection FAILED: " + ex.Message);
+            }
+            return myDataTable;
+        }
         /// <summary>
         /// Given a DataTable and the name of the field to look up, return info of field in List<string>         
         /// </summary>
@@ -107,6 +138,12 @@ namespace LectorMDB.MDBConexion
         public List<string> getSimple(string query, string mdbPath, string campo)
         {
             var resultRaw = readMDB(query, mdbPath);
+            var response = getInfoDataTable(resultRaw, campo);
+            return response;
+        }
+        public List<string> getWithRegex(string query, string mdbPath, List<string> paramsNames, List<string> paramsValues, string campo)
+        {
+            var resultRaw = readMDBWithRegex(query, mdbPath, paramsNames, paramsValues);
             var response = getInfoDataTable(resultRaw, campo);
             return response;
         }

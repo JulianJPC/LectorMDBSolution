@@ -50,6 +50,7 @@ namespace LectorMDB
             dQuerys = theData.getQuerys();
             dBuscar = theData.getBuscar();
             dPrint = theData.getPrint();
+            dInputs = theData.getInputs();
             theMDBConexion.setConextionString(theData.getReaderString());
             /// Set up fonts combo
             foreach (string oneFont in dFont.combo)
@@ -167,10 +168,11 @@ namespace LectorMDB
             int nH = 0;
             var inputWin = new windows.inputNumberPage(dInputs.textInputNP, dInputs.titleInputNP);
             inputWin.Owner = this; // So it centers on the main window
+
             if (inputWin.ShowDialog() == true)
             {
-                var numberPage = inputWin.txtInput;
-                var isNumber = Int32.TryParse(numeroH.Text, out nH);
+                var numberPage = inputWin.InputText;
+                var isNumber = Int32.TryParse(numberPage, out nH);
                 if (isNumber)
                 {
                     CambiarHoja(nH);
@@ -179,7 +181,7 @@ namespace LectorMDB
                 {
                     MessageBox.Show(dInputs.errorTextInputNP, dInputs.errorTitleInputNP);
                 }
-            }
+                }
         }
         private void setUpNewLibro(string path, int maxHoja, string shortName)
         {
@@ -211,7 +213,11 @@ namespace LectorMDB
         /// <param name="numeroDeHoja"></param>
         private void CambiarHoja(int numeroDeHoja)
         {
-            var isValidNumber = libroActual.isValidNumberHoja(numeroDeHoja);
+            var isValidNumber = false;
+            if (libroActual != null)
+            {
+                isValidNumber = libroActual.isValidNumberHoja(numeroDeHoja);
+            }
             if (isValidNumber)
             {
                 var paramsQuery = new List<string> { dQuerys.oneParam };
@@ -276,9 +282,8 @@ namespace LectorMDB
 
         private void printOpen_Click(object sender, RoutedEventArgs e)
         {
-
-            windows.inputPrint aPrintWindow = new windows.inputPrint(dPrint);
-            aPrintWindow.Show();
+            var aPrintWindow = new windows.inputPrint(dPrint);
+            aPrintWindow.Owner = this; // So it centers on the main window
 
             if (aPrintWindow.ShowDialog() == true)
             {
@@ -289,7 +294,7 @@ namespace LectorMDB
                 var printRange = getPrintRage(result.startNumber, result.endNumber);
                 
                 var okInput = false;
-                if(pageSize != null || fontSize != 0 || printRange.Count > 0)
+                if(pageSize != null && fontSize != 0 && printRange.Count > 0)
                 {
                     okInput = true;
                 }
@@ -298,7 +303,10 @@ namespace LectorMDB
                 {
                     printPages(printRange[0], printRange[1], pageSize, orient, fontSize);
                 }
-
+                else
+                {
+                    MessageBox.Show(dPrint.errorInput, dPrint.errorTitle);
+                }
             }
 
         }
@@ -317,16 +325,14 @@ namespace LectorMDB
             doc.PageHeight = dlg.PrintableAreaHeight;
             doc.PageWidth = dlg.PrintableAreaWidth;
             doc.FontSize = fs;
-            doc.FontFamily = new FontFamily("Courier New");
+            doc.FontFamily = new FontFamily(dPrint.fontFamily);
 
-
-            var paramsQuery = new List<string> { dQuerys.oneParam };
-            
-            for (int i = hojaInicial; i <= hojaFinal; i++)
+            var valuesParamsQuery = new List<string> { hojaInicial.ToString(), hojaFinal.ToString() };
+            var paramsQuery = new List<string> { dQuerys.oneParam, dQuerys.oneParam };
+            var allHojas = theMDBConexion.getSimple(dQuerys.getAllHojaRange, libroActual.path, paramsQuery, valuesParamsQuery, dQuerys.fieldHojaText);
+            foreach (var unaHoja in allHojas)
             {
-                var valuesParamsQuery = new List<string> { i.ToString() };
-                var rawHoja = theMDBConexion.getSimple(dQuerys.getOneHoja, libroActual.path, paramsQuery, valuesParamsQuery, dQuerys.fieldHojaText)[0];
-                doc.Blocks.Add(new System.Windows.Documents.Paragraph(new Run(rawHoja)) { BreakPageBefore = true });
+                doc.Blocks.Add(new System.Windows.Documents.Paragraph(new Run(unaHoja)) { BreakPageBefore = true });
             }
             DocumentPaginator paginator = ((IDocumentPaginatorSource)doc).DocumentPaginator;
             paginator.ComputePageCount();
@@ -364,20 +370,18 @@ namespace LectorMDB
             var isIntStarting = Int32.TryParse(firstNumber, out startNumberInt);
             var isIntEnding = Int32.TryParse(endNumber, out endNumberInt);
 
-            var areNumbers = false;
             var isInRangeStart = false;
             var isInRangeEnd = false;
             var areInDistance = false;
-            if (isIntStarting && isIntEnding)
+            if (isIntStarting && isIntEnding && libroActual != null)
             {
-                areNumbers = true;
                 if(startNumberInt > 0 && startNumberInt <= libroActual.numeroHojaMaxima)
                 {
                     isInRangeStart = true;
                 }
                 if (endNumberInt > 0 && endNumberInt <= libroActual.numeroHojaMaxima)
                 {
-                    isInRangeStart = true;
+                    isInRangeEnd = true;
                 }
             }
             if(isInRangeStart && isInRangeEnd)
@@ -449,52 +453,38 @@ namespace LectorMDB
 
         private void buscar_Click(object sender, RoutedEventArgs e)
         {
-            var tieneLibro = false;
             var tieneInput = false;
             var tieneResultado = false;
             var textInput = "";
             var numberPage = 0;
-            if(libroActual == null)
+
+            var inputWin = new windows.inputBuscar();
+            inputWin.Owner = this; // So it centers on the main window
+            if (inputWin.ShowDialog() == true)
             {
-                tieneLibro = true;
+                textInput = inputWin.InputText;
+                tieneInput = true;
             }
-            if (tieneLibro)
-            {
-                var inputWin = new windows.inputBuscar();
-                inputWin.Owner = this; // So it centers on the main window
-                if (inputWin.ShowDialog() == true)
-                {
-                    textInput = inputWin.InputText;
-                    tieneInput = true;
-                }
-            }
-            if (tieneInput)
+
+            if (tieneInput && libroActual != null)
             {
                 var paramsQuery = new List<string> { dQuerys.oneParam };
                 var valuesParamsQuery = new List<string> { textInput };
-                var pageNumberRaw = theMDBConexion.getSimple(dQuerys.searchTextHojas, libroActual.path, paramsQuery, valuesParamsQuery, dQuerys.fieldHojaNumero);
+                var pageNumberRaw = theMDBConexion.getWithRegex(dQuerys.searchTextHojas, libroActual.path, paramsQuery, valuesParamsQuery, dQuerys.fieldHojaNumero);
                 if (pageNumberRaw.Count > 0)
                 {
                     tieneResultado = true;
                     numberPage = Int32.Parse(pageNumberRaw[0]);
                 }
             }
+
+
             if (tieneResultado)
             {
-                
                 CambiarHoja(numberPage);
                 HighlightText(ContenidoMDB, textInput, Brushes.Red);
             }
-
-            if (!tieneLibro)
-            {
-                MessageBox.Show(dBuscar.errorLibro, dBuscar.errorTitle);
-            }
-            else if (!tieneInput)
-            {
-                MessageBox.Show(dBuscar.errorInput, dBuscar.errorTitle);
-            }
-            else if (!tieneResultado)
+            else if (!tieneResultado && tieneInput)
             {
                 MessageBox.Show(dBuscar.errorNoMatch, dBuscar.errorTitle);
             }

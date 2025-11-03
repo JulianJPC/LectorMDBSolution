@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:LectorMDB.windows"
         mc:Ignorable="d"
         Title="inputPrint" SizeToContent="WidthAndHeight" Background="Gray" FontSize="18"
-        HorizontalAlignment="Center" VerticalAlignment="Center">
+        WindowStartupLocation="CenterOwner">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20"/>
@@ -44,22 +44,23 @@
         </Grid.RowDefinitions>
 
         <TextBlock x:Name="textHojaTipo" Grid.Column="1" Grid.Row="1" Text="Tamaño:"></TextBlock>
-        <ComboBox x:Name="tipoHoja" Grid.Column="2" Grid.Row="1"></ComboBox>
+        <ComboBox x:Name="tipoHoja" Grid.Column="3" Grid.Row="1"></ComboBox>
 
         <TextBlock x:Name="textOrientacion" Grid.Column="1" Grid.Row="2" Text="Orientación:"></TextBlock>
-        <ComboBox x:Name="orientacionHoja" Grid.Column="2" Grid.Row="2"></ComboBox>
+        <ComboBox x:Name="orientacionHoja" Grid.Column="3" Grid.Row="2"></ComboBox>
 
         <TextBlock x:Name="textFont" Grid.Column="1" Grid.Row="3" Text="Tamaño letra:"></TextBlock>
-        <ComboBox x:Name="fontPrint" Grid.Column="2" Grid.Row="3"></ComboBox>
+        <ComboBox x:Name="fontPrint" Grid.Column="3" Grid.Row="3"></ComboBox>
         
         <TextBlock x:Name="textInicialNumeroHoja" Grid.Column="1" Grid.Row="4" Text="Número Hoja Inicial:"></TextBlock>
-        <TextBox x:Name="printNumeroHojaUno" Grid.Column="2" Grid.Row="4" Width="100" IsReadOnly="True"  TextWrapping="Wrap"  TextAlignment="Center"></TextBox>
+        <TextBox x:Name="printNumeroHojaUno" Grid.Column="3" Grid.Row="4" Width="100"  TextWrapping="Wrap"  TextAlignment="Center"></TextBox>
         
         <TextBlock x:Name="textFinalNumeroHoja" Text="Número Hoja Final:" Grid.Column="1" Grid.Row="5"></TextBlock>
-        <TextBox x:Name="printNumeroHojaDos" Grid.Column="2" Grid.Row="5" Width="100" IsReadOnly="True"  TextWrapping="Wrap"  TextAlignment="Center"></TextBox>
+        <TextBox x:Name="printNumeroHojaDos" Grid.Column="3" Grid.Row="5" Width="100"  TextWrapping="Wrap"  TextAlignment="Center"></TextBox>
 
 
-        <Button x:Name="printEverything" Content="Imprimir" Grid.Column="2" Grid.Row="6" Margin="0, 30, 0, 0" Click="printEverything_Click" ></Button>
+        <Button x:Name="printEverything" Content="Imprimir" Grid.Column="2" Grid.Row="6" Margin="0, 30, 5, 0" Click="printEverything_Click" ></Button>
+        <Button x:Name="exit" Content="Cancelar" Grid.Column="3" Grid.Row="6" Margin="0, 30, 0, 0" Click="exit_Click"></Button>
         
     </Grid>
 </Window>

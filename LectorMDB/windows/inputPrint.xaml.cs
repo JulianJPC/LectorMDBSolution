@@ -24,6 +24,14 @@ namespace LectorMDB.windows
             tipoHoja.ItemsSource = theData.tiposHojas;
             orientacionHoja.ItemsSource = theData.orientaciones;
             fontPrint.ItemsSource = theData.fontSizes;
+            textHojaTipo.Text = theData.textHojaTipo;
+            textOrientacion.Text = theData.textOrientacion;
+            textFont.Text = theData.textFont;
+            textInicialNumeroHoja.Text = theData.textInicialNumeroHoja;
+            textFinalNumeroHoja.Text = theData.textFinalNumeroHoja;
+            printEverything.Content = theData.buttonPrint;
+            exit.Content = theData.buttonExit;
+            this.Title = theData.title;
 
             tipoHoja.SelectedIndex = tipoHoja.Items.Count - 1;
             orientacionHoja.SelectedIndex = 0;
@@ -39,9 +47,15 @@ namespace LectorMDB.windows
             theInput.setSizePage(tipoHoja.SelectedValue.ToString());
             theInput.setOrientacion(orientacionHoja.SelectedValue.ToString());
             theInput.setSizeLetter(fontPrint.SelectedValue.ToString());
-            theInput.setStartNumber(printNumeroHojaUno.ToString());
-            theInput.setEndNumber(printNumeroHojaDos.ToString());
+            theInput.setStartNumber(printNumeroHojaUno.Text.ToString());
+            theInput.setEndNumber(printNumeroHojaDos.Text.ToString());
             DialogResult = true;
+            Close();
+        }
+
+        private void exit_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
             Close();
         }
     }
