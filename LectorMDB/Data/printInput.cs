@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Printing;
 using System.Text;
+using System.Windows.Media;
 
 namespace LectorMDB.Data
 {
@@ -12,13 +13,44 @@ namespace LectorMDB.Data
         public string sizeLetter { get; private set; }
         public string startNumber { get; private set; }
         public string endNumber { get; private set; }
+        public PageMediaSize finalPageSize { get; private set; }
+        public PageOrientation finalOrient { get; private set; }
+        public int finalFontSize { get; private set; }
+        public FontFamily finalFontFamily { get; private set; }
+        public List<int> finalPrintRange { get; private set; }
 
         private List<string> sizesPage { get; set; }
         private List<string> orientaciones { get; set; }
         private List<string> sizesLetter { get; set; }
+        
+        public bool areFinalValuesOK()
+        {
+            var response = false;
+            var notNull = false;
+            if (finalPageSize != null && finalFontSize != null && finalOrient != null && finalPrintRange != null)
+            {
+                notNull = true;
+            }
+            if (notNull)
+            {
+                if(finalFontSize > 0 && finalPrintRange.Count > 0)
+                {
+                    response = true;
+                }
+            }
+            return response;
+        }
 
-
-        public PageMediaSize getPage()
+        public void setUpFinalValues(List<int> valuesPageNumbers, string fontFamily)
+        {
+            getPage();
+            getOrient();
+            getSizeFont();
+            finalPrintRange = valuesPageNumbers;
+            finalFontFamily = new FontFamily(fontFamily);
+        }
+        
+        private void getPage()
         {
             PageMediaSize response = null;
 
@@ -43,9 +75,9 @@ namespace LectorMDB.Data
             {
                 response = new PageMediaSize(PageMediaSizeName.NorthAmericaLegal);
             }
-            return response;
+            finalPageSize = response;
         }
-        public PageOrientation getOrient()
+        private void getOrient()
         {
             var response = PageOrientation.Landscape;
             var indexSize = orientaciones.IndexOf(orientacion);
@@ -57,9 +89,9 @@ namespace LectorMDB.Data
             {
                 response = PageOrientation.Portrait;
             }
-            return response;
+            finalOrient = response;
         }
-        public int getSizeFont()
+        private void getSizeFont()
         {
             var response = 0;
             var indexSize = sizesLetter.IndexOf(sizeLetter);
@@ -67,7 +99,7 @@ namespace LectorMDB.Data
             {
                 response = indexSize + 6;
             }
-            return response;
+            finalFontSize = response;
         }
 
         public void setVariables(List<string> pages, List<string> orients, List<string> letters)

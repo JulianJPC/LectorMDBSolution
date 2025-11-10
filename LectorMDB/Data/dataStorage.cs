@@ -15,7 +15,6 @@ namespace LectorMDB.Data
         private string filterExt;
         private string contentFile;
         private string titleError;
-        private string errorFileFormat;
         private string errorOpening;
         private string queryMAXHoja;
         private string queryGetOneHoja;
@@ -50,6 +49,9 @@ namespace LectorMDB.Data
 
         private string printErrorInput;
         private string printErrorTitle;
+        private string desbordamientoError;
+        private string desbordamientoErrorTitulo;
+        private string printTitleDocument;
         public dataStorage()
         {
             defaultFont = 12;
@@ -61,7 +63,6 @@ namespace LectorMDB.Data
             filterExt = "Base Access| *.mdb";
             contentFile = "H.MDB";
             titleError = "Error";
-            errorFileFormat = "Error Archivo no valido";
             errorOpening = "No se encontro: ";
             queryMAXHoja = "SELECT MAX(HojaNro) FROM Libro";
             queryGetOneHoja = "SELECT Hoja FROM Libro WHERE HojaNro = ?";
@@ -96,6 +97,9 @@ namespace LectorMDB.Data
             inputPrintTitle = "Imprimir";
             printErrorInput = "Error con los parametros introducidos.";
             printErrorTitle = "Error";
+            desbordamientoError = "Desbordamiento. Se van imprimir {0} hojas. Deberian de ser {1} ¿Desea Continuar?";
+            desbordamientoErrorTitulo = "Desbordamiento";
+            printTitleDocument = "Páginas de Libro MDB";
         }
         public printData getPrint()
         {
@@ -114,6 +118,9 @@ namespace LectorMDB.Data
             response.setErrorInput(printErrorInput);
             response.setErrorTitle(printErrorTitle);
             response.setFontFamily(fontToPrint);
+            response.setDesbordamiento(desbordamientoError);
+            response.setTitleDesbordamiento(desbordamientoErrorTitulo);
+            response.setPrintTitle(printTitleDocument);
             return response;
         }
         public string getReaderString()
@@ -147,7 +154,6 @@ namespace LectorMDB.Data
             response.setDefaultExt(defaultExt);
             response.setFilterExt(filterExt);
             response.setErrorWindowTitle(titleError);
-            response.setErrorWindowWrongFile(errorFileFormat);
             response.setErrorWindowNotContentFile(errorOpening);
             response.setFileOfHojas(contentFile);
             return response;

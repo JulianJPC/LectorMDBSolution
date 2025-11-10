@@ -10,7 +10,6 @@ namespace LectorMDB.Data
         public string filterExtension { get; private set; }
         public string fileOfHojas { get; private set; }
         public string errorWindowTitle { get; private set; }
-        public string errorWindowWrongFile { get; private set; }
         public string errorWindowNotContentFile { get; private set; }
 
         public void setDefaultExt(string value)
@@ -28,10 +27,6 @@ namespace LectorMDB.Data
         public void setErrorWindowTitle(string value)
         {
             errorWindowTitle = value;
-        }
-        public void setErrorWindowWrongFile(string value)
-        {
-            errorWindowWrongFile = value;
         }
         public void setErrorWindowNotContentFile(string value)
         {

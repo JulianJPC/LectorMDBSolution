@@ -21,6 +21,23 @@ namespace LectorMDB.Data
         public string errorTitle { get; private set; }
         public string fontFamily { get; private set; }
 
+        public string desbordamientoError { get; private set; }
+        public string titleDesbordamiento { get; private set; }
+        public string printTitle { get; private set; }
+
+
+        public void setPrintTitle(string value)
+        {
+            printTitle = value;
+        }
+        public void setTitleDesbordamiento(string value)
+        {
+            titleDesbordamiento = value;
+        }
+        public void setDesbordamiento(string value)
+        {
+            desbordamientoError = value;
+        }
         public void setFontFamily(string value)
         {
             fontFamily = value;
