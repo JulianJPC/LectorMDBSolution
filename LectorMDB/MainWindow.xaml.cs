@@ -162,6 +162,7 @@ namespace LectorMDB
             if(existMDBContent & existMaxHoja)
             {
                 LoaderOverlay.Visibility = Visibility.Visible; // 👈 Show loader
+                loadingText.Text = dDialogue.dialogueLoading;
                 await Task.Run(() =>
                 {
                     setUpNewLibro(pathMDB, maxHoja, fileNameLimpio);
@@ -219,13 +220,12 @@ namespace LectorMDB
                 okInput = inputPrint.areFinalValuesOK(); 
             }
 
-
             if (okInput)
             {
                 try
                 {
                     LoaderOverlay.Visibility = Visibility.Visible; // 👈 Show loader
-                    
+                    loadingText.Text = dPrint.printLoading;
                     await Task.Run(() =>
                     {
                         Application.Current.Dispatcher.Invoke(() =>
@@ -293,6 +293,7 @@ namespace LectorMDB
             if (tieneInput && libroActual != null)
             {
                 LoaderOverlay.Visibility = Visibility.Visible; // 👈 Show loader
+                loadingText.Text = dBuscar.buscarLoading;
                 await Task.Run(() =>
                 {
                     var paramsQuery = new List<string> { dQuerys.oneParam };

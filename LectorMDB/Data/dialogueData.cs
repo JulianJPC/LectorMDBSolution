@@ -11,7 +11,12 @@ namespace LectorMDB.Data
         public string fileOfHojas { get; private set; }
         public string errorWindowTitle { get; private set; }
         public string errorWindowNotContentFile { get; private set; }
+        public string dialogueLoading { get; private set; }
 
+        public void setDialogueLoading(string value)
+        {
+            dialogueLoading = value;
+        }
         public void setDefaultExt(string value)
         {
             defaultExtension = value;

@@ -52,6 +52,9 @@ namespace LectorMDB.Data
         private string desbordamientoError;
         private string desbordamientoErrorTitulo;
         private string printTitleDocument;
+        private string printLoadingText;
+        private string buscarLoadingText;
+        private string dialogueLoadingText;
         public dataStorage()
         {
             defaultFont = 12;
@@ -68,7 +71,7 @@ namespace LectorMDB.Data
             queryGetOneHoja = "SELECT Hoja FROM Libro WHERE HojaNro = ?";
             queryCampoHoja = "Hoja";
             readerMDBString = @"Provider = Microsoft.Jet.OLEDB.4.0;Data Source=";
-            tiposHojas = new List<string> { "Carta", "A4", "A5", "Ejecutivo", "Legal" };
+            tiposHojas = new List<string> { "Ejecutivo", "Legal", "Carta", "A5", "A4" };
             orientaciones = new List<string> { "Horizontal", "Vertical" };
             fontPrintSizes = new List<string> { "6", "7", "8", "9", "10", "11", "12" };
             fieldHojaMAX = "Expr1000";
@@ -100,6 +103,9 @@ namespace LectorMDB.Data
             desbordamientoError = "Desbordamiento. Se van imprimir {0} hojas. Deberian de ser {1} ¿Desea Continuar?";
             desbordamientoErrorTitulo = "Desbordamiento";
             printTitleDocument = "Páginas de Libro MDB";
+            printLoadingText = "Imprimiendo...";
+            buscarLoadingText = "Buscando...";
+            dialogueLoadingText = "Abriendo...";
         }
         public printData getPrint()
         {
@@ -121,6 +127,7 @@ namespace LectorMDB.Data
             response.setDesbordamiento(desbordamientoError);
             response.setTitleDesbordamiento(desbordamientoErrorTitulo);
             response.setPrintTitle(printTitleDocument);
+            response.setPrintLoading(printLoadingText);
             return response;
         }
         public string getReaderString()
@@ -133,6 +140,7 @@ namespace LectorMDB.Data
             response.setErrorInput(buscarErrorInput);
             response.setErrorNoMatch(buscarErrorNoMatch);
             response.setErrorTitle(buscarErrorTitle);
+            response.setBuscarLoading(buscarLoadingText);
             return response;
         }
         public querysData getQuerys()
@@ -156,6 +164,7 @@ namespace LectorMDB.Data
             response.setErrorWindowTitle(titleError);
             response.setErrorWindowNotContentFile(errorOpening);
             response.setFileOfHojas(contentFile);
+            response.setDialogueLoading(dialogueLoadingText);
             return response;
         }
         public fontData getFont()

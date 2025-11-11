@@ -10,7 +10,12 @@ namespace LectorMDB.Data
         public string errorInput { get; private set; }
         public string errorNoMatch { get; private set; }
         public string errorTitle { get; private set; }
+        public string buscarLoading { get; private set; }
 
+        public void setBuscarLoading(string value)
+        {
+            buscarLoading = value;
+        }
         public void setErrorLibro(string value)
         {
             errorLibro = value;

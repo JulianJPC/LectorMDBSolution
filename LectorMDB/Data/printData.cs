@@ -20,12 +20,15 @@ namespace LectorMDB.Data
         public string errorInput { get; private set; }
         public string errorTitle { get; private set; }
         public string fontFamily { get; private set; }
-
         public string desbordamientoError { get; private set; }
         public string titleDesbordamiento { get; private set; }
         public string printTitle { get; private set; }
+        public string printLoading { get; private set; }
 
-
+        public void setPrintLoading(string value)
+        {
+            printLoading = value;
+        }
         public void setPrintTitle(string value)
         {
             printTitle = value;
